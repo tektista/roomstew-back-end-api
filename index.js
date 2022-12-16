@@ -6,10 +6,7 @@ const app = require("./app");
 //import PORT from config.js
 const config = require("./utils/config");
 
-//
-const port = config.PORT;
-
 //start the app
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`);
 });
