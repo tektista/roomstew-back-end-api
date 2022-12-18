@@ -1,4 +1,4 @@
-//Description: imports application from app.js and starts the app
+//Description: imports application from app.js and starts the server
 
 //import express from app.js
 const app = require("./app");
