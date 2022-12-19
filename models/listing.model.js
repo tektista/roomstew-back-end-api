@@ -27,7 +27,7 @@ const Listing = function (listing) {
   this.createdBy = listing.createdBy;
 };
 
-//
+//get all listings from db
 Listing.getAll = (result) => {
   db.query("SELECT * FROM listing", (err, res) => {
     if (err) {
@@ -38,6 +38,7 @@ Listing.getAll = (result) => {
   });
 };
 
+//find a specific listing by id
 Listing.findById = (listingId, result) => {
   db.query(`SELECT * FROM listing WHERE id = ${listingId}`, (err, res) => {
     if (err) {
