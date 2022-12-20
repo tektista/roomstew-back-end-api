@@ -5,7 +5,7 @@ const app = express();
 const cors = require("cors");
 
 //import listings routes
-const listingsRouter = require("./routes/listings");
+const listingsRouter = require("./routes/listing.routes.js");
 const mysql = require("mysql");
 
 app.use(cors());

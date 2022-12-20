@@ -39,7 +39,7 @@ create = (req, res) => {
     description: req.body.description,
     thumbnail: req.body.thumbnail,
     phoneNum: req.body.phoneNum,
-    email: req.body.email,
+
     roomsAvailable: req.body.roomsAvailable,
     isFurnished: req.body.isFurnished,
     bathroomCount: req.body.bathroomCount,

@@ -8,7 +8,6 @@ const Listing = function (listing) {
   this.description = listing.description;
   this.thumbnail = listing.thumbnail;
   this.phoneNum = listing.phoneNum;
-  this.email = listing.email;
 
   this.roomsAvailable = listing.roomsAvailable;
   this.isFurnished = listing.isFurnished;
@@ -81,13 +80,13 @@ Listing.create = (newListing, result) => {
 
 Listing.updateById = (id, listing, result) => {
   db.query(
-    "UPDATE listing SET title = ?, description = ?, thumbnail = ?, phoneNum = ?, email = ?, roomsAvailable = ?, isFurnished = ?, bathroomCount = ?, areBillsIncluded = ?, streetAddress = ?, city = ?, postcode = ?, isExpired = ?, expiryDate = ?, createdDate = ?, createdBy = ? WHERE id = ?",
+    "UPDATE listing SET title = ?, description = ?, thumbnail = ?, phoneNum = ?, roomsAvailable = ?, isFurnished = ?, bathroomCount = ?, areBillsIncluded = ?, streetAddress = ?, city = ?, postcode = ?, isExpired = ?, expiryDate = ?, createdDate = ?, createdBy = ? WHERE id = ?",
     [
       listing.title,
       listing.description,
       listing.thumbnail,
       listing.phoneNum,
-      listing.email,
+
       listing.roomsAvailable,
       listing.isFurnished,
       listing.bathroomCount,
