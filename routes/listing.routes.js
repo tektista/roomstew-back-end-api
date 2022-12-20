@@ -1,5 +1,5 @@
-//Instead of defining functionalities inside routes, we define them in a separate controller file,
-//so routes are easy to read
+//Description: Instead of defining functionalities inside routes, we define them in a separate controller file,
+//so routes are easily readable
 const listing = require("../controllers/listing.controller.js");
 
 //express router used to shorten route path to base

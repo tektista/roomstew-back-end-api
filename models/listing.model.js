@@ -1,7 +1,8 @@
-//This file ocntains the model for a listing and functions to interact with the database and its listings
+//Description: The model for a listing and functions that interact with listings in the database
 
 const db = require("./db.js");
 
+//constructor for listing object
 const Listing = function (listing) {
   this.title = listing.title;
   this.description = listing.description;
@@ -9,7 +10,6 @@ const Listing = function (listing) {
   this.phoneNum = listing.phoneNum;
   this.email = listing.email;
 
-  //Maybe not needed
   this.roomsAvailable = listing.roomsAvailable;
   this.isFurnished = listing.isFurnished;
   this.bathhroomCount = listing.bathroomCount;
@@ -23,24 +23,35 @@ const Listing = function (listing) {
   //times
   this.isExpired = listing.isExpired;
   this.expiryDate = listing.expiryDate;
-  this.createdDate = listing.createdDate;
-  this.createdBy = listing.createdBy;
+  this.createDate = listing.createDate;
+  this.updateDate = listing.updateDate;
 };
 
 //get all listings from db
-Listing.getAll = (result) => {
-  db.query("SELECT * FROM listing", (err, res) => {
+Listing.getAll = (title, result) => {
+  let query = "SELECT * FROM listing";
+
+  if (title) {
+    query = query + ` WHERE title LIKE '%${title}%'`;
+  }
+
+  db.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);
+
+      //wtf is this line
       result(null, err);
       return;
     }
+
+    console.log("listings: ", res);
+    result(null, res);
   });
 };
 
 //find a specific listing by id
-Listing.findById = (listingId, result) => {
-  db.query(`SELECT * FROM listing WHERE id = ${listingId}`, (err, res) => {
+Listing.findById = (id, result) => {
+  db.query(`SELECT * FROM listing WHERE id = ${id}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -56,6 +67,15 @@ Listing.create = (newListing, result) => {
       result(err, null);
       return;
     }
+
+    if (res.length) {
+      console.log("found tutorial: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found Tutorial with the id
+    result({ kind: "not_found" }, null);
   });
 };
 
@@ -87,6 +107,15 @@ Listing.updateById = (id, listing, result) => {
         result(null, err);
         return;
       }
+
+      if (res.affectedRows == 0) {
+        // not found Tutorial with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+      console.log("updated tutorial: ", { id: id, ...listing });
+      result(null, { id: id, ...listing });
     }
   );
 };
@@ -98,6 +127,15 @@ Listing.remove = (id, result) => {
       result(null, err);
       return;
     }
+
+    if (res.affectedRows == 0) {
+      // not found Tutorial with the id
+      result({ kind: "not_found" }, null);
+      return;
+    }
+
+    console.log("deleted listing with id: ", id);
+    result(null, res);
   });
 };
 
