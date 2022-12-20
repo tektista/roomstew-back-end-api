@@ -7,11 +7,13 @@ const Listing = function (listing) {
   this.title = listing.title;
   this.description = listing.description;
   this.thumbnail = listing.thumbnail;
+  this.email = listing.email;
   this.phoneNum = listing.phoneNum;
 
+  //details
   this.roomsAvailable = listing.roomsAvailable;
   this.isFurnished = listing.isFurnished;
-  this.bathhroomCount = listing.bathroomCount;
+  this.bathroomCount = listing.bathroomCount;
   this.areBillsIncluded = listing.areBillsIncluded;
 
   //address
@@ -24,6 +26,14 @@ const Listing = function (listing) {
   this.expiryDate = listing.expiryDate;
   this.createDate = listing.createDate;
   this.updateDate = listing.updateDate;
+
+  //preferences
+  this.minAge = listing.minAge;
+  this.maxAge = listing.maxAge;
+  this.genderPreference = listing.genderPreference;
+  this.areCouplesAllowed = listing.areCouplesAllowed;
+  this.areSmokersAllowed = listing.isSmokingAllowed;
+  this.arePetsAllowed = listing.arePetsAllowed;
 };
 
 //get all listings from db
@@ -80,13 +90,13 @@ Listing.create = (newListing, result) => {
 
 Listing.updateById = (id, listing, result) => {
   db.query(
-    "UPDATE listing SET title = ?, description = ?, thumbnail = ?, phoneNum = ?, roomsAvailable = ?, isFurnished = ?, bathroomCount = ?, areBillsIncluded = ?, streetAddress = ?, city = ?, postcode = ?, isExpired = ?, expiryDate = ?, createdDate = ?, createdBy = ? WHERE id = ?",
+    "UPDATE listing SET title = ?, description = ?, thumbnail = ?, email = ?, phoneNum = ?, roomsAvailable = ?, isFurnished = ?, bathroomCount = ?, areBillsIncluded = ?, streetAddress = ?, city = ?, postcode = ?, isExpired = ?, expiryDate = ?, createDate = ?, updateDate = ?, minAge = ?, maxAge = ?, genderPreference = ?, areCouplesAllowed = ?, areSmokersAllowed = ?, arePetsAllowed = ? WHERE id = ?",
     [
       listing.title,
       listing.description,
       listing.thumbnail,
+      listing.email,
       listing.phoneNum,
-
       listing.roomsAvailable,
       listing.isFurnished,
       listing.bathroomCount,
@@ -96,9 +106,14 @@ Listing.updateById = (id, listing, result) => {
       listing.postcode,
       listing.isExpired,
       listing.expiryDate,
-      listing.createdDate,
-      listing.createdBy,
-      id,
+      listing.createDate,
+      listing.updateDate,
+      listing.minAge,
+      listing.maxAge,
+      listing.genderPreference,
+      listing.areCouplesAllowed,
+      listing.areSmokersAllowed,
+      listing.arePetsAllowed,
     ],
     (err, res) => {
       if (err) {

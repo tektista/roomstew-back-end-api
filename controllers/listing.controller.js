@@ -38,8 +38,8 @@ create = (req, res) => {
     title: req.body.title,
     description: req.body.description,
     thumbnail: req.body.thumbnail,
+    email: req.body.email,
     phoneNum: req.body.phoneNum,
-
     roomsAvailable: req.body.roomsAvailable,
     isFurnished: req.body.isFurnished,
     bathroomCount: req.body.bathroomCount,
@@ -51,6 +51,12 @@ create = (req, res) => {
     expiryDate: req.body.expiryDate,
     createDate: req.body.createDate,
     updateDate: req.body.updateDate,
+    minAge: req.body.minAge,
+    maxAge: req.body.maxAge,
+    genderPreference: req.body.genderPreference,
+    areCouplesAllowed: req.body.areCouplesAllowed,
+    areSmokersAllowed: req.body.areSmokersAllowed,
+    arePetsAllowed: req.body.arePetsAllowed,
   });
 
   // Save a listing in the database FROM MODEL
