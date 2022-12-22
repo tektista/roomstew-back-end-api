@@ -36,6 +36,9 @@ const Listing = function (listing) {
   this.arePetsAllowed = listing.arePetsAllowed;
 };
 
+// a callback is a function that you pass as a parameter to
+// another function
+
 //get all listings from db
 Listing.getAll = (title, result) => {
   let query = "SELECT * FROM listing";
@@ -44,7 +47,9 @@ Listing.getAll = (title, result) => {
     query = query + ` WHERE title LIKE '%${title}%'`;
   }
 
+  //err and res from db.query
   db.query(query, (err, res) => {
+    //if error, log error and return
     if (err) {
       console.log("error: ", err);
 

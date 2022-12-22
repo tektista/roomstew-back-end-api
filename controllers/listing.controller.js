@@ -1,9 +1,11 @@
 const Listing = require("../models/listing.model.js");
 
-// Retrieve all Tutorials from the database (with condition).
+//req is from the request when the route is called, res is the response
+//we send back to the client calling the route
 findAll = (req, res) => {
   const title = req.query.title;
 
+  //the second parameter is a functio0n
   Listing.getAll(title, (err, data) => {
     if (err) {
       res.status(500).send({
@@ -14,7 +16,6 @@ findAll = (req, res) => {
   });
 };
 
-// Find a single Tutorial with a id
 findById = (req, res) => {
   Listing.findById(req.params.id, (err, data) => {
     if (err) {
