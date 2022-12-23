@@ -1,7 +1,8 @@
 const mysql = require("mysql2");
+
 const config = require("../utils/config");
 
-console.log("HI " + config.PASSWORD);
+console.log(config.PASSWORD);
 
 const connection = mysql.createConnection({
   user: "root",

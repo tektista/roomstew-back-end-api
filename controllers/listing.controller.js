@@ -5,7 +5,6 @@ const Listing = require("../models/listing.model.js");
 findAll = (req, res) => {
   const title = req.query.title;
 
-  //the second parameter is a functio0n
   Listing.getAll(title, (err, data) => {
     if (err) {
       res.status(500).send({
@@ -14,6 +13,17 @@ findAll = (req, res) => {
       });
     } else res.send(data);
   });
+
+  // const title = req.query.title;
+
+  // try {
+  //   const data = await Listing.getAll(title);
+  //   res.send(data);
+  // } catch (err) {
+  //   res.status(500).send({
+  //     message: err.message || "Some error occurred while retrieving listings.",
+  //   });
+  // }
 };
 
 findById = (req, res) => {

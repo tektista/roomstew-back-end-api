@@ -38,10 +38,8 @@ const Listing = function (listing) {
 
 // a callback is a function that you pass as a parameter to
 // another function
-
-//get all listings from db
 Listing.getAll = (title, result) => {
-  let query = "SELECT * FROM listing";
+  let query = "SELECT * FROM listings";
 
   if (title) {
     query = query + ` WHERE title LIKE '%${title}%'`;
@@ -54,7 +52,7 @@ Listing.getAll = (title, result) => {
       console.log("error: ", err);
 
       //wtf is this line
-      result(null, err);
+      result(err, null);
       return;
     }
 
@@ -62,6 +60,23 @@ Listing.getAll = (title, result) => {
     result(null, res);
   });
 };
+
+// Listing.getAll = async (title) => {
+//   let query = "SELECT * FROM listing";
+
+//   if (title) {
+//     query = query + ` WHERE title LIKE '%${title}%'`;
+//   }
+
+//   try {
+//     const res = await db.query(query);
+//     console.log("listings: ", res);
+//     return res;
+//   } catch (err) {
+//     console.log("error: ", err);
+//     throw err;
+//   }
+// };
 
 //find a specific listing by id
 Listing.findById = (id, result) => {
