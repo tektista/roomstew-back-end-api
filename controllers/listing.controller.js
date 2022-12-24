@@ -101,11 +101,11 @@ removeById = (req, res) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found Tutorial with id ${req.params.id}.`,
+          message: `Not found Listing with id ${req.params.id}.`,
         });
       } else {
         res.status(500).send({
-          message: "Could not delete Tutorial with id " + req.params.id,
+          message: "Could not delete listing with id " + req.params.id,
         });
       }
     } else res.send({ message: `Listing was deleted successfully!` });
