@@ -13,17 +13,6 @@ findAll = (req, res) => {
       });
     } else res.send(data);
   });
-
-  // const title = req.query.title;
-
-  // try {
-  //   const data = await Listing.getAll(title);
-  //   res.send(data);
-  // } catch (err) {
-  //   res.status(500).send({
-  //     message: err.message || "Some error occurred while retrieving listings.",
-  //   });
-  // }
 };
 
 findById = (req, res) => {
@@ -50,24 +39,24 @@ create = (req, res) => {
     description: req.body.description,
     thumbnail: req.body.thumbnail,
     email: req.body.email,
-    phoneNum: req.body.phoneNum,
-    roomsAvailable: req.body.roomsAvailable,
-    isFurnished: req.body.isFurnished,
-    bathroomCount: req.body.bathroomCount,
-    areBillsIncluded: req.body.areBillsIncluded,
-    streetAddress: req.body.streetAddress,
+    phone_num: req.body.phone_num,
+    rooms_available: req.body.rooms_available,
+    is_furnished: req.body.is_furnished,
+    bathroom_count: req.body.bathroom_count,
+    bills_included: req.body.bills_included,
+    street_address: req.body.street_address,
     city: req.body.city,
     postcode: req.body.postcode,
-    isExpired: req.body.isExpired,
-    expiryDate: req.body.expiryDate,
-    createDate: req.body.createDate,
-    updateDate: req.body.updateDate,
-    minAge: req.body.minAge,
-    maxAge: req.body.maxAge,
-    genderPreference: req.body.genderPreference,
-    areCouplesAllowed: req.body.areCouplesAllowed,
-    areSmokersAllowed: req.body.areSmokersAllowed,
-    arePetsAllowed: req.body.arePetsAllowed,
+    is_expired: req.body.is_expired,
+    expiry_date: req.body.expiry_date,
+    listing_create_date: req.body.listing_create_date,
+    listing_update_date: req.body.listing_update_date,
+    min_age: req.body.min_age,
+    max_age: req.body.max_age,
+    gender_preference: req.body.gender_preference,
+    couples_allowed: req.body.couples_allowed,
+    smokers_allowed: req.body.smokers_allowed,
+    pets_allowed: req.body.pets_allowed,
   });
 
   // Save a listing in the database FROM MODEL
@@ -107,7 +96,21 @@ updateById = (req, res) => {
 };
 
 // Delete a Tutorial with the specified id in the request
-removeById = (req, res) => {};
+removeById = (req, res) => {
+  Listing.remove(req.params.id, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found Tutorial with id ${req.params.id}.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Could not delete Tutorial with id " + req.params.id,
+        });
+      }
+    } else res.send({ message: `Listing was deleted successfully!` });
+  });
+};
 
 module.exports = {
   create,

@@ -8,95 +8,66 @@ const Listing = function (listing) {
   this.description = listing.description;
   this.thumbnail = listing.thumbnail;
   this.email = listing.email;
-  this.phoneNum = listing.phoneNum;
+  this.phone_num = listing.phone_num;
 
   //details
-  this.roomsAvailable = listing.roomsAvailable;
-  this.isFurnished = listing.isFurnished;
-  this.bathroomCount = listing.bathroomCount;
-  this.areBillsIncluded = listing.areBillsIncluded;
+  this.rooms_available = listing.rooms_available;
+  this.is_furnished = listing.is_furnished;
+  this.bathroom_count = listing.bathroom_count;
+  this.bills_included = listing.bills_included;
 
   //address
-  this.streetAddress = listing.streetAddress;
+  this.street_address = listing.street_address;
   this.city;
   this.postcode;
 
   //times
-  this.isExpired = listing.isExpired;
-  this.expiryDate = listing.expiryDate;
-  this.createDate = listing.createDate;
-  this.updateDate = listing.updateDate;
+  this.is_expired = listing.is_expired;
+  this.expiry_date = listing.expiry_date;
+  this.listing_create_date = listing.listing_create_date;
+  this.listing_update_date = listing.listing_update_date;
 
   //preferences
-  this.minAge = listing.minAge;
-  this.maxAge = listing.maxAge;
-  this.genderPreference = listing.genderPreference;
-  this.areCouplesAllowed = listing.areCouplesAllowed;
-  this.areSmokersAllowed = listing.isSmokingAllowed;
-  this.arePetsAllowed = listing.arePetsAllowed;
+  this.min_age = listing.min_age;
+  this.max_age = listing.max_age;
+  this.gender_preference = listing.gender_preference;
+  this.couples_allowed = listing.couples_allowed;
+  this.smokers_allowed = listing.smokers_allowed;
+  this.pets_allowed = listing.pets_allowed;
 };
 
-// a callback is a function that you pass as a parameter to
-// another function
 Listing.getAll = (title, result) => {
-  let query = "SELECT * FROM listings";
+  let query = "SELECT * FROM listing";
 
   if (title) {
     query = query + ` WHERE title LIKE '%${title}%'`;
   }
 
-  //err and res from db.query
   db.query(query, (err, res) => {
     //if error, log error and return
     if (err) {
       console.log("error: ", err);
 
-      //wtf is this line
+      // err passed on to controller callback function as first param
+      // second param is null because there is no data due to error
       result(err, null);
       return;
     }
-
+    //no error, set second param to res which is data param in controller
+    //callback function
     console.log("listings: ", res);
     result(null, res);
   });
 };
 
-// Listing.getAll = async (title) => {
-//   let query = "SELECT * FROM listing";
-
-//   if (title) {
-//     query = query + ` WHERE title LIKE '%${title}%'`;
-//   }
-
-//   try {
-//     const res = await db.query(query);
-//     console.log("listings: ", res);
-//     return res;
-//   } catch (err) {
-//     console.log("error: ", err);
-//     throw err;
-//   }
-// };
-
 //find a specific listing by id
 Listing.findById = (id, result) => {
-  db.query(`SELECT * FROM listing WHERE id = ${id}`, (err, res) => {
+  db.query(`SELECT * FROM listing WHERE listing_id = ${id}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
       return;
     }
-  });
-};
-
-Listing.create = (newListing, result) => {
-  db.query("INSERT INTO listing SET ?", newListing, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-
     if (res.length) {
       console.log("found tutorial: ", res[0]);
       result(null, res[0]);
@@ -108,37 +79,50 @@ Listing.create = (newListing, result) => {
   });
 };
 
+Listing.create = (newListing, result) => {
+  db.query("INSERT INTO listing SET ?", newListing, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    console.log("created listing: ", { id: res.insertId, ...newListing });
+    result(null, { id: res.insertId, ...newListing });
+  });
+};
+
 Listing.updateById = (id, listing, result) => {
   db.query(
-    "UPDATE listing SET title = ?, description = ?, thumbnail = ?, email = ?, phoneNum = ?, roomsAvailable = ?, isFurnished = ?, bathroomCount = ?, areBillsIncluded = ?, streetAddress = ?, city = ?, postcode = ?, isExpired = ?, expiryDate = ?, createDate = ?, updateDate = ?, minAge = ?, maxAge = ?, genderPreference = ?, areCouplesAllowed = ?, areSmokersAllowed = ?, arePetsAllowed = ? WHERE id = ?",
+    `UPDATE listing SET title = ?, description = ?, thumbnail = ?, email = ?, phone_num = ?, rooms_available = ?, is_furnished = ?, bathroom_count = ?, bills_included = ?, street_address = ?, city = ?, postcode = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ? WHERE listing_id = ${id}`,
     [
       listing.title,
       listing.description,
       listing.thumbnail,
       listing.email,
-      listing.phoneNum,
-      listing.roomsAvailable,
-      listing.isFurnished,
-      listing.bathroomCount,
-      listing.areBillsIncluded,
-      listing.streetAddress,
+      listing.phone_num,
+      listing.rooms_available,
+      listing.is_furnished,
+      listing.bathroom_count,
+      listing.bills_included,
+      listing.street_address,
       listing.city,
       listing.postcode,
-      listing.isExpired,
-      listing.expiryDate,
-      listing.createDate,
-      listing.updateDate,
-      listing.minAge,
-      listing.maxAge,
-      listing.genderPreference,
-      listing.areCouplesAllowed,
-      listing.areSmokersAllowed,
-      listing.arePetsAllowed,
+      listing.is_expired,
+      listing.expiry_date,
+      listing.listing_create_date,
+      listing.listing_update_date,
+      listing.min_age,
+      listing.max_age,
+      listing.gender_preference,
+      listing.couples_allowed,
+      listing.smokers_allowed,
+      listing.pets_allowed,
     ],
     (err, res) => {
       if (err) {
         console.log("error: ", err);
-        result(null, err);
+        result(err, null);
         return;
       }
 
@@ -155,10 +139,10 @@ Listing.updateById = (id, listing, result) => {
 };
 
 Listing.remove = (id, result) => {
-  db.query("DELETE FROM listing WHERE id = ?", id, (err, res) => {
+  db.query("DELETE FROM listing WHERE listing_id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
-      result(null, err);
+      result(err, null);
       return;
     }
 

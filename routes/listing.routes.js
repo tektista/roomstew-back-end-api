@@ -9,7 +9,7 @@ const listingsRouter = require("express").Router();
 listingsRouter.get("/", listing.findAll);
 
 //route to get a specific listing
-listingsRouter.get("/", listing.findById);
+listingsRouter.get("/:id", listing.findById);
 
 //route to create a listing
 listingsRouter.post("/", listing.create);

@@ -1,28 +1,20 @@
 const mysql = require("mysql2");
-
 const config = require("../utils/config");
 
-console.log(config.PASSWORD);
-
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
+  //NOTE: for some reason "config.USER" doesn't work, but "root" does
   user: "root",
   host: config.HOST,
   password: config.PASSWORD,
   database: config.DATABASE,
-
-  // user: config.USER,
-  // host: config.HOST,
-  // password: config.PASSWORD,
-  // database: config.DATABASE,
 });
 
-connection.connect((error) => {
-  console.log(config.PASSWORD);
+db.connect((error) => {
   if (error) {
     console.log(error);
   } else {
-    console.log("Connected to database");
+    console.log("Connected to the database");
   }
 });
 
-module.exports = connection;
+module.exports = db;
