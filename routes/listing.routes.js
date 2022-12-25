@@ -9,15 +9,15 @@ const listingsRouter = require("express").Router();
 listingsRouter.get("/", listing.getAllListings);
 
 // //route to get a specific listing
-// listingsRouter.get("/:id", listing.findById);
+listingsRouter.get("/:id", listing.getAListingById);
 
-// //route to create a listing
-// listingsRouter.post("/", listing.create);
+//route to create a listing
+listingsRouter.post("/", listing.postAListing);
 
-// //route to update a listing
-// listingsRouter.put("/:id", listing.updateById);
+//route to update a listing
+listingsRouter.put("/:id", listing.putAListingById);
 
-// //route to delete a listing
-// listingsRouter.delete("/:id", listing.removeById);
+//route to delete a listing
+listingsRouter.delete("/:id", listing.deleteAListingById);
 
 module.exports = listingsRouter;

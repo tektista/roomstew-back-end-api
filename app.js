@@ -1,12 +1,9 @@
 const express = require("express");
-const app = express();
-
-//fix for allowing front-end and back-end to have different sources e.g. localhost3000 and 3001
 const cors = require("cors");
+const listingsRouter = require("./routes/listing.routes");
+const errorHandler = require("./utils/errorHandler");
 
-//import listings routes
-const listingsRouter = require("./routes/listing.routes.js");
-const mysql = require("mysql2");
+const app = express();
 
 app.use(cors());
 
@@ -15,5 +12,8 @@ app.use(express.json());
 
 //use listings routes with path /api/listings
 app.use("/api/listings", listingsRouter);
+
+//error handler middleware
+app.use(errorHandler);
 
 module.exports = app;
