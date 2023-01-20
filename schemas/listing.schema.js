@@ -8,7 +8,6 @@ const listingSchema = Joi.object({
   phone_num: Joi.string()
     .regex(/^\+44\s?\d{4}\s?\d{6}$/)
     .required(),
-  rooms_available: Joi.number().integer().min(1).max(12).required(),
   is_furnished: Joi.boolean().required(),
   bathroom_count: Joi.number().integer().min(1).max(12).required(),
   bills_included: Joi.boolean().required(),

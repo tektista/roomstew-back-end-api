@@ -42,7 +42,6 @@ const postAListing = async (req, res, next) => {
       thumbnail: req.body.thumbnail,
       email: req.body.email,
       phone_num: req.body.phone_num,
-      rooms_available: req.body.rooms_available,
       is_furnished: req.body.is_furnished,
       bathroom_count: req.body.bathroom_count,
       bills_included: req.body.bills_included,

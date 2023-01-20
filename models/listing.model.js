@@ -10,7 +10,6 @@ const Listing = function (listing) {
   this.phone_num = listing.phone_num;
 
   //details
-  this.rooms_available = listing.rooms_available;
   this.is_furnished = listing.is_furnished;
   this.bathroom_count = listing.bathroom_count;
   this.bills_included = listing.bills_included;
@@ -45,6 +44,34 @@ Listing.findAllListings = async (title) => {
   try {
     const result = await pool.query(query);
     const rows = result[0];
+
+    /* 
+    1. database response will be a list of json listings
+    2. We need to send the client a list of objects in the form 
+
+    [{
+      //from list of listings json
+      title: "title",
+      image: "image",
+      dateAdded: "dateAdded",
+
+      //from room table
+      numRoomsAvailable: 3,
+      lowestRoomRent: 456,
+      lowestRoomDateAvailable: 21/12/2020,
+    }]
+
+    3. for each listing we need to: 
+    - create a card object
+    - copy title, image and date added to the card object
+    - for the current listing, query the database for rooms associated
+     with the current listing
+    - store the found rooms in a temproom list
+    -find the num of rooms, lowest room rent, lowest room date available
+    - copy these values over to the card object
+    - return this to the controller
+    */
+
     return rows;
   } catch (err) {
     throw err;
@@ -77,14 +104,13 @@ Listing.createAListing = async (newListing) => {
 Listing.updateAListingById = async (id, listing) => {
   try {
     const result = await pool.query(
-      "UPDATE listing SET title = ?, description = ?, thumbnail = ?, email = ?, phone_num = ?, rooms_available = ?, is_furnished = ?, bathroom_count = ?, bills_included = ?, street_address = ?, city = ?, postcode = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ? WHERE listing_id = ?",
+      "UPDATE listing SET title = ?, description = ?, thumbnail = ?, email = ?, phone_num = ?, is_furnished = ?, bathroom_count = ?, bills_included = ?, street_address = ?, city = ?, postcode = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ? WHERE listing_id = ?",
       [
         listing.title,
         listing.description,
         listing.thumbnail,
         listing.email,
         listing.phone_num,
-        listing.rooms_available,
         listing.is_furnished,
         listing.bathroom_count,
         listing.bills_included,
