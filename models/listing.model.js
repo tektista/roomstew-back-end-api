@@ -78,6 +78,7 @@ Listing.findAllListings = async (title) => {
       });
 
       const Card = {
+        id: listing.listing_id,
         title: listing.title,
         image: listing.thumbnail,
         dateAdded: listing.listing_create_date,
@@ -117,9 +118,6 @@ Listing.findAllListings = async (title) => {
     - copy these values over to the card object
     - return this to the controller
     */
-
-    console.log(cardList);
-
     return cardList;
   } catch (err) {
     throw err;
