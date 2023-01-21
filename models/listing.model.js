@@ -35,15 +35,61 @@ const Listing = function (listing) {
 };
 
 Listing.findAllListings = async (title) => {
-  let query = "SELECT * FROM listing";
+  let listingQuery = "SELECT * FROM listing";
 
-  if (title) {
-    query = query + ` WHERE title LIKE '%${title}%'`;
-  }
+  // if (title) {
+  //   query = query + ` WHERE title LIKE '%${title}%'`;
+  // }
 
   try {
-    const result = await pool.query(query);
-    const rows = result[0];
+    // const date = "2022-06-01 00:00:00";
+    // const date2 = "2022-06-11 00:00:00";
+
+    // if (date2 > date) {
+    //   console.log(date2);
+    // }
+
+    const listingQueryResult = await pool.query(listingQuery);
+    const listingRows = listingQueryResult[0];
+    const cardList = [];
+
+    for (const listing of listingRows) {
+      let roomQuery = `SELECT * FROM room WHERE listing_listing_id = ${listing.listing_id}`;
+      const roomQueryResult = await pool.query(roomQuery);
+      const roomRows = roomQueryResult[0];
+
+      const numOfRooms = roomRows.length;
+      const minRoomRent = roomRows.reduce((prev, current) => {
+        if (prev.rent < current.rent) {
+          return prev.rent;
+        } else {
+          return current.rent;
+        }
+      });
+      const earliestRoomDate = roomRows.reduce((prev, current) => {
+        let prevDate = new Date(prev.start_date);
+        let currentDate = new Date(current.start_date);
+
+        if (prevDate < currentDate) {
+          return prevDate;
+        } else {
+          return currentDate;
+        }
+      });
+
+      const Card = {
+        title: listing.title,
+        image: listing.thumbnail,
+        dateAdded: listing.listing_create_date,
+        numRoomsAvailable: numOfRooms,
+        minRoomRent: minRoomRent,
+        earliestRoomDateAvailable: earliestRoomDate,
+      };
+
+      console.log(cardList);
+      cardList.push(Card);
+      console.log(cardList);
+    }
 
     /* 
     1. database response will be a list of json listings
@@ -72,7 +118,9 @@ Listing.findAllListings = async (title) => {
     - return this to the controller
     */
 
-    return rows;
+    console.log(cardList);
+
+    return cardList;
   } catch (err) {
     throw err;
   }
