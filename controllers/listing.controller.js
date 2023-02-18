@@ -18,7 +18,7 @@ const getAListingById = async (req, res, next) => {
   try {
     const listingAndPhotos = await Listing.findAListingById(req.params.id);
 
-    if (listingAndPhotos[0]) {
+    if (listingAndPhotos[0].length) {
       res.status(200).json(listingAndPhotos);
     } else {
       res.status(404).json(`Listing with id ${req.params.id} does not exist`);

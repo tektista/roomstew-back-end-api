@@ -131,14 +131,14 @@ Listing.findAListingById = async (id) => {
       `SELECT * FROM listing WHERE listing_id = ?`,
       [id]
     );
-    const listingRows = listingQueryResult[0][0];
-    console.log(listingRows);
+    const listingRows = listingQueryResult[0];
 
     const photoQueryResult = await pool.query(
-      `SELECT * FROM listing_photo WHERE listing_photo_id = ?`,
+      `SELECT * FROM listing_photo WHERE listing_listing_id = ?`,
       [id]
     );
     const photoRows = photoQueryResult[0];
+    console.log(photoRows);
 
     return [listingRows, photoRows];
   } catch (err) {
