@@ -6,10 +6,8 @@ const { listingSchema } = require("../schemas/listing.schema");
 //we send back to the client calling the route
 
 const getAllListings = async (req, res, next) => {
-  const title = req.query.title;
-
   try {
-    const result = await Listing.findAllListings(title);
+    const result = await Listing.findAllListings(req);
     res.status(200).json(result);
   } catch (err) {
     return next(err);
@@ -18,11 +16,13 @@ const getAllListings = async (req, res, next) => {
 
 const getAListingById = async (req, res, next) => {
   try {
-    const listing = await Listing.findAListingById(req.params.id);
-    if (listing.length) {
-      res.status(200).json(listing);
+    const listingAndPhotos = await Listing.findAListingById(req.params.id);
+
+    if (listingAndPhotos[0]) {
+      res.status(200).json(listingAndPhotos);
+    } else {
+      res.status(404).json(`Listing with id ${req.params.id} does not exist`);
     }
-    res.status(404).json(`Listing with id ${req.params.id} does not exist`);
   } catch (err) {
     return next(err);
   }
@@ -42,16 +42,33 @@ const postAListing = async (req, res, next) => {
       thumbnail: req.body.thumbnail,
       email: req.body.email,
       phone_num: req.body.phone_num,
+
+      //
       is_furnished: req.body.is_furnished,
       bathroom_count: req.body.bathroom_count,
       bills_included: req.body.bills_included,
+
+      //add
+      has_living_room: req.body.has_living_room,
+      has_garden: req.body.has_garden,
+      has_parking: req.body.has_parking,
+      internet_included: req.body.internet_included,
+      building_type: req.body.building_type,
+      rental_type: req.body.rental_type,
+      has_hmo: req.body.has_hmo,
+
+      //
       street_address: req.body.street_address,
       city: req.body.city,
       postcode: req.body.postcode,
+
+      //
       is_expired: req.body.is_expired,
       expiry_date: req.body.expiry_date,
       listing_create_date: req.body.listing_create_date,
       listing_update_date: req.body.listing_update_date,
+
+      //
       min_age: req.body.min_age,
       max_age: req.body.max_age,
       gender_preference: req.body.gender_preference,

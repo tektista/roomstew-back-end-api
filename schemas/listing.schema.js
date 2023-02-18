@@ -11,6 +11,16 @@ const listingSchema = Joi.object({
   is_furnished: Joi.boolean().required(),
   bathroom_count: Joi.number().integer().min(1).max(12).required(),
   bills_included: Joi.boolean().required(),
+
+  //look over this
+  has_living_room: Joi.boolean().required(),
+  has_garden: Joi.boolean().required(),
+  has_parking: Joi.boolean().required(),
+  internet_included: Joi.boolean().required(),
+  building_type: Joi.number().integer().min(0).max(2).required(),
+  rental_type: Joi.number().integer().min(0).max(2).required(),
+  has_hmo: Joi.boolean().required(),
+
   street_address: Joi.string().min(10).max(255).required(),
   city: Joi.string().min(1).max(50).required(),
   postcode: Joi.string().min(1).max(10).required(),

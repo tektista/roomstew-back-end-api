@@ -6,6 +6,7 @@ const listing = require("../controllers/listing.controller.js");
 const listingsRouter = require("express").Router();
 
 //route to get all listings - call listing.findAll function from controller
+//use this to retrieve all listings and gather info from rooms
 listingsRouter.get("/", listing.getAllListings);
 
 // //route to get a specific listing

@@ -14,6 +14,15 @@ const Listing = function (listing) {
   this.bathroom_count = listing.bathroom_count;
   this.bills_included = listing.bills_included;
 
+  //add
+  this.internet_included = listing.internet_included;
+  this.building_type = listing.building_type;
+  this.rental_type = listing.rental_type;
+  this.has_hmo = listing.has_hmo;
+  this.has_living_room = listing.has_living_room;
+  this.has_garden = listing.has_garden;
+  this.has_parking = listing.has_parking;
+
   //address
   this.street_address = listing.street_address;
   this.city;
@@ -34,21 +43,14 @@ const Listing = function (listing) {
   this.pets_allowed = listing.pets_allowed;
 };
 
-Listing.findAllListings = async (title) => {
-  let listingQuery = "SELECT * FROM listing";
+Listing.findAllListings = async (req) => {
+  //retreive req from controller
 
-  // if (title) {
-  //   query = query + ` WHERE title LIKE '%${title}%'`;
-  // }
+  const limit = 1;
+  const offset = req.query.offset;
+  let listingQuery = `SELECT * FROM listing LIMIT ${limit} OFFSET ${offset}`;
 
   try {
-    // const date = "2022-06-01 00:00:00";
-    // const date2 = "2022-06-11 00:00:00";
-
-    // if (date2 > date) {
-    //   console.log(date2);
-    // }
-
     const listingQueryResult = await pool.query(listingQuery);
     const listingRows = listingQueryResult[0];
     const cardList = [];
@@ -87,9 +89,7 @@ Listing.findAllListings = async (title) => {
         earliestRoomDateAvailable: earliestRoomDate,
       };
 
-      console.log(cardList);
       cardList.push(Card);
-      console.log(cardList);
     }
 
     /* 
@@ -118,6 +118,7 @@ Listing.findAllListings = async (title) => {
     - copy these values over to the card object
     - return this to the controller
     */
+    // return cardList;
     return cardList;
   } catch (err) {
     throw err;
@@ -126,12 +127,20 @@ Listing.findAllListings = async (title) => {
 
 Listing.findAListingById = async (id) => {
   try {
-    const result = await pool.query(
+    const listingQueryResult = await pool.query(
       `SELECT * FROM listing WHERE listing_id = ?`,
       [id]
     );
-    const rows = result[0];
-    return rows;
+    const listingRows = listingQueryResult[0][0];
+    console.log(listingRows);
+
+    const photoQueryResult = await pool.query(
+      `SELECT * FROM listing_photo WHERE listing_photo_id = ?`,
+      [id]
+    );
+    const photoRows = photoQueryResult[0];
+
+    return [listingRows, photoRows];
   } catch (err) {
     throw err;
   }
