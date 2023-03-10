@@ -37,45 +37,43 @@ const postAListing = async (req, res, next) => {
     }
 
     const newListing = new Listing({
-      title: req.body.title,
-      description: req.body.description,
-      thumbnail: req.body.thumbnail,
-      email: req.body.email,
-      phone_num: req.body.phone_num,
+      //LOCATION
+      postcode: req.body.postcode,
+      street_address: req.body.street_address,
+      city: req.body.city,
+      country: req.body.country,
 
-      //
+      //BUILDING DETAILS
+      building_type: req.body.building_type,
+      bills_included: req.body.bills_included,
+      internet_included: req.body.internet_included,
       is_furnished: req.body.is_furnished,
       bathroom_count: req.body.bathroom_count,
-      bills_included: req.body.bills_included,
-
-      //add
+      has_hmo: req.body.has_hmo,
       has_living_room: req.body.has_living_room,
       has_garden: req.body.has_garden,
       has_parking: req.body.has_parking,
-      internet_included: req.body.internet_included,
-      building_type: req.body.building_type,
-      rental_type: req.body.rental_type,
-      has_hmo: req.body.has_hmo,
 
-      //
-      street_address: req.body.street_address,
-      city: req.body.city,
-      postcode: req.body.postcode,
-
-      //
-      is_expired: req.body.is_expired,
-      expiry_date: req.body.expiry_date,
-      listing_create_date: req.body.listing_create_date,
-      listing_update_date: req.body.listing_update_date,
-
-      //
+      //PREFERENCES
       min_age: req.body.min_age,
       max_age: req.body.max_age,
       gender_preference: req.body.gender_preference,
       couples_allowed: req.body.couples_allowed,
       smokers_allowed: req.body.smokers_allowed,
       pets_allowed: req.body.pets_allowed,
+
+      //PROPERTY DESCRIPTION
+      title: req.body.title,
+      description: req.body.description,
+
+      //TIMES
+      is_expired: req.body.is_expired,
+      expiry_date: req.body.expiry_date,
+      listing_create_date: req.body.listing_create_date,
+      listing_update_date: req.body.listing_update_date,
     });
+
+    console.log(newListing);
 
     const result = await Listing.createAListing(newListing);
     res.status(200).json(newListing);
