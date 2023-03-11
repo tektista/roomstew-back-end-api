@@ -65,6 +65,8 @@ Listing.findAllListings = async (req) => {
       //list of room objects
       const roomRows = roomQueryResult[0];
 
+      console.log(roomRows);
+
       //return number of rooms for this listng
       const numOfRooms = roomRows.length;
 
@@ -79,6 +81,8 @@ Listing.findAllListings = async (req) => {
         const roomDate = new Date(room.start_date);
         return roomDate < minDate ? roomDate : minDate;
       }, new Date("9999-12-31"));
+
+      console.log(minRoomRent);
 
       /*
       

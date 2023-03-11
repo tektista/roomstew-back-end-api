@@ -8,7 +8,6 @@ const { listingSchema } = require("../schemas/listing.schema");
 const getAllListings = async (req, res, next) => {
   try {
     const result = await Listing.findAllListings(req);
-    console.log(result);
     res.status(200).json(result);
   } catch (err) {
     return next(err);
@@ -73,8 +72,6 @@ const postAListing = async (req, res, next) => {
       listing_create_date: req.body.listing_create_date,
       listing_update_date: req.body.listing_update_date,
     });
-
-    console.log(newListing);
 
     const result = await Listing.createAListing(newListing);
     res.status(200).json(newListing);
