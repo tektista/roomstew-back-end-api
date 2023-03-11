@@ -75,16 +75,10 @@ Listing.findAllListings = async (req) => {
       );
 
       //return the date of the room with the earliest available date
-      const earliestRoomDate = roomRows.reduce((prev, current) => {
-        let prevDate = new Date(prev.start_date);
-        let currentDate = new Date(current.start_date);
-
-        if (prevDate < currentDate) {
-          return prevDate;
-        } else {
-          return currentDate;
-        }
-      });
+      const earliestRoomDate = roomRows.reduce((minDate, room) => {
+        const roomDate = new Date(room.start_date);
+        return roomDate < minDate ? roomDate : minDate;
+      }, new Date("9999-12-31"));
 
       /*
       
