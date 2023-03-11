@@ -7,10 +7,8 @@ const { listingSchema } = require("../schemas/listing.schema");
 
 const getAllListings = async (req, res, next) => {
   try {
-    console.log("Hello");
     const result = await Listing.findAllListings(req);
-    console.log("Bye");
-
+    console.log(result);
     res.status(200).json(result);
   } catch (err) {
     return next(err);

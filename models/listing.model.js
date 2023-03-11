@@ -51,28 +51,28 @@ Listing.findAllListings = async (req) => {
     //Query to return all listings
     const listingQueryResult = await pool.query(listingQuery);
 
+    //list of listingObjects
     const listingRows = listingQueryResult[0];
+
     const cardList = [];
 
-    //For each listing
+    //for each listing
     for (const listing of listingRows) {
       //retrieve a list of rooms for this listing
       let roomQuery = `SELECT * FROM room WHERE listing_listing_id = ${listing.listing_id}`;
       const roomQueryResult = await pool.query(roomQuery);
 
+      //list of room objects
       const roomRows = roomQueryResult[0];
 
       //return number of rooms for this listng
       const numOfRooms = roomRows.length;
 
       //return the rent of the room with the lowest rent
-      const minRoomRent = roomRows.reduce((prev, current) => {
-        if (prev.rent < current.rent) {
-          return prev.rent;
-        } else {
-          return current.rent;
-        }
-      });
+      const minRoomRent = roomRows.reduce(
+        (min, room) => (room.rent < min ? room.rent : min),
+        Infinity
+      );
 
       //return the date of the room with the earliest available date
       const earliestRoomDate = roomRows.reduce((prev, current) => {
@@ -136,6 +136,7 @@ Listing.findAllListings = async (req) => {
     - return this to the controller
     */
     // return cardList;
+
     return cardList;
   } catch (err) {
     throw err;
@@ -155,7 +156,6 @@ Listing.findAListingById = async (id) => {
       [id]
     );
     const photoRows = photoQueryResult[0];
-    console.log(photoRows);
 
     return [listingRows, photoRows];
   } catch (err) {
