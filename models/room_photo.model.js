@@ -1,0 +1,67 @@
+const pool = require("./db.js");
+
+const RoomPhoto = function (roomPhoto) {
+  this.room_photo = roomPhoto.room_photo;
+  this.room_photo_order = roomPhoto.room_photo_order;
+  this.room_photo_create_date = roomPhoto.room_photo_create_date;
+  this.room_room_id = roomPhoto.room_room_id;
+};
+
+/* all functions in this require a room_id which is provided by 
+the room model
+*/
+
+//get all photos for a room
+RoomPhoto.getPhotosForRoom = async (id) => {
+  try {
+    const roomPhotoQueryResult = await pool.query(
+      "SELECT * FROM room_photo WHERE room_room_id = ?",
+      [id]
+    );
+    const roomPhotoRows = roomPhotoQueryResult[0];
+    return roomPhotoRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
+//create one room photo
+RoomPhoto.createARoomPhoto = async (newRoomPhoto) => {
+  try {
+    const roomPhotoQueryResult = await pool.query(
+      "INSERT INTO room_photo SET ?",
+      [newRoomPhoto]
+    );
+    const roomPhotoRows = roomPhotoQueryResult[0];
+    return roomPhotoRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/* 
+    For each room image, create a new room photo obj
+     with a room_room id pointing to the current room
+     Then add this to the database
+     */
+//Insert all photos for a given room ID and image list
+RoomPhoto.createRoomPhotos = async (roomInsertId, roomImageList) => {
+  try {
+    for (let i = 0; i < roomImageList.length; i++) {
+      //TO DO: validate the room photos
+      const newRoomPhoto = new RoomPhoto({
+        room_photo: roomImageList[i].room_photo,
+        room_photo_order: roomImageList[i].room_photo_order,
+        room_photo_create_date: new Date(),
+        room_room_id: roomInsertId,
+      });
+
+      const roomPhotoRows = await RoomPhoto.createARoomPhoto(newRoomPhoto);
+      return roomPhotoRows;
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = RoomPhoto;

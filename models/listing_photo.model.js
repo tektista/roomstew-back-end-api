@@ -44,7 +44,6 @@ ListingPhoto.createAListingPhoto = async (newListingPhoto) => {
      with a listing_listing id pointing to the current listing
      Then add this to the database
      */
-
 //Insert all photos for a given listing ID and image list
 ListingPhoto.createListingPhotos = async (
   listingInsertId,
