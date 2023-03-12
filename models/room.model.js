@@ -30,7 +30,17 @@ Room.getRoomsForListing = async (id) => {
     );
     return roomQueryResult;
   } catch (err) {
-    return next(err);
+    throw err;
+  }
+};
+
+Room.createARoom = async (newRoom) => {
+  try {
+    const result = await pool.query("INSERT INTO room SET ?", [newRoom]);
+    const rows = result[0];
+    return rows;
+  } catch (err) {
+    throw err;
   }
 };
 

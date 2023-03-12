@@ -39,8 +39,6 @@ const Listing = function (listing) {
   this.expiry_date = listing.expiry_date;
   this.listing_create_date = listing.listing_create_date;
   this.listing_update_date = listing.listing_update_date;
-
-  //remove
 };
 
 //Function for retrieving information required for a card listing
@@ -63,10 +61,9 @@ Listing.findAllListings = async (req) => {
       //retrieve a list of rooms for this listing
 
       const roomQueryResult = await Room.getRoomsForListing(listing.listing_id);
+
       //list of room objects
       const roomRows = roomQueryResult[0];
-
-      console.log(roomRows);
 
       //return number of rooms for this listng
       const numOfRooms = roomRows.length;
@@ -82,8 +79,6 @@ Listing.findAllListings = async (req) => {
         const roomDate = new Date(room.start_date);
         return roomDate < minDate ? roomDate : minDate;
       }, new Date("9999-12-31"));
-
-      console.log(minRoomRent);
 
       /*
       
@@ -158,6 +153,7 @@ Listing.findAListingById = async (id) => {
       `SELECT * FROM listing_photo WHERE listing_listing_id = ?`,
       [id]
     );
+
     const photoRows = photoQueryResult[0];
 
     const formattedPhotoRows = [];
@@ -166,18 +162,15 @@ Listing.findAListingById = async (id) => {
     photoRows.forEach((photoObj) => {
       const formattedPhotoObj = {
         listingPhoto: photoObj.listing_photo,
-        listingPhotoOrder: photoObj.listing_photo_order,
       };
+
       formattedPhotoRows.push(formattedPhotoObj);
     });
 
     formattedPhotoRows.sort(
       (a, b) => a.listingPhotoOrder - b.listingPhotoOrder
     );
-
-    console.log(formattedPhotoRows);
-
-    return [listingRows, photoRows];
+    return [listingRows, formattedPhotoRows];
   } catch (err) {
     throw err;
   }
@@ -185,9 +178,18 @@ Listing.findAListingById = async (id) => {
 
 Listing.createAListing = async (newListing) => {
   try {
-    const result = await pool.query("INSERT INTO listing SET ?", [newListing]);
-    const rows = result[0];
-    return rows;
+    /* 
+    1. Insert the Listing
+    2. Insert the Photos associated with this listing
+    3. Insert the Rooms associated with this listing
+    4. Insert the Room photos associated with each room
+
+     */
+    const listingQueryResult = await pool.query("INSERT INTO listing SET ?", [
+      newListing,
+    ]);
+    const listingRows = listingQueryResult[0];
+    return listingRows;
   } catch (err) {
     throw err;
   }
