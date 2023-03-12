@@ -1,5 +1,6 @@
 //Description: The model for a listing and functions that only interacs with listings in the database
 const pool = require("./db.js");
+const Room = require("./room.model.js");
 
 //constructor for listing object
 const Listing = function (listing) {
@@ -42,6 +43,7 @@ const Listing = function (listing) {
   //remove
 };
 
+//Function for retrieving information required for a card listing
 Listing.findAllListings = async (req) => {
   const limit = 1;
   const offset = req.query.offset;
@@ -59,9 +61,8 @@ Listing.findAllListings = async (req) => {
     //for each listing
     for (const listing of listingRows) {
       //retrieve a list of rooms for this listing
-      let roomQuery = `SELECT * FROM room WHERE listing_listing_id = ${listing.listing_id}`;
-      const roomQueryResult = await pool.query(roomQuery);
 
+      const roomQueryResult = await Room.getRoomsForListing(listing.listing_id);
       //list of room objects
       const roomRows = roomQueryResult[0];
 
@@ -144,6 +145,7 @@ Listing.findAllListings = async (req) => {
   }
 };
 
+//function for retrieving information needed for a cards details
 Listing.findAListingById = async (id) => {
   try {
     const listingQueryResult = await pool.query(
@@ -157,6 +159,23 @@ Listing.findAListingById = async (id) => {
       [id]
     );
     const photoRows = photoQueryResult[0];
+
+    const formattedPhotoRows = [];
+
+    // sort and format photo rows for use in front end
+    photoRows.forEach((photoObj) => {
+      const formattedPhotoObj = {
+        listingPhoto: photoObj.listing_photo,
+        listingPhotoOrder: photoObj.listing_photo_order,
+      };
+      formattedPhotoRows.push(formattedPhotoObj);
+    });
+
+    formattedPhotoRows.sort(
+      (a, b) => a.listingPhotoOrder - b.listingPhotoOrder
+    );
+
+    console.log(formattedPhotoRows);
 
     return [listingRows, photoRows];
   } catch (err) {
