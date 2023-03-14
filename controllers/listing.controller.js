@@ -39,9 +39,12 @@ const getAListingById = async (req, res, next) => {
 */
 const createAListing = async (req, res, next) => {
   try {
+    //[ {listiingObj}, [{listingPhotoObj}...], [ [{roomObj}, [{photoObj}...]... ]  ]
+
+    //
     const listing = req.body[0];
-    const listingImageList = req.body[1];
-    const listingRoomListWithPhotoList = req.body[2];
+    const listingPhotos = req.body[1];
+    const listingRoomsWithRoomPhotos = req.body[2];
 
     const { error, value } = listingSchema.validate(listing);
 
@@ -77,31 +80,13 @@ const createAListing = async (req, res, next) => {
       listing_update_date: new Date(),
     });
 
-    const listingRows = await Listing.createAListing(newListing);
-    const listingInsertId = listingRows.insertId;
-
-    //Insert the listing images
-    const listingPhotoRows = await ListingPhoto.createPhotosForAListing(
-      listingInsertId,
-      listingImageList
+    const dataInserted = await Listing.createAListing(
+      newListing,
+      listingPhotos,
+      listingRoomsWithRoomPhotos
     );
 
-    // retrieve each insert id
-    const roomListWithPhotoList = await Room.createRoomsForAListing(
-      listingInsertId,
-      listingRoomListWithPhotoList
-    );
-
-    /*
-
-    for each room, post the room using the listing insert id.
-    then for each image, post the image using the room insert id
-    
-    */
-
-    // for each room list
-
-    res.status(200).json(listingRows);
+    res.status(200).json({ dataInserted });
   } catch (err) {
     return next(err);
   }

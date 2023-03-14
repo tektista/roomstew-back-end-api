@@ -31,12 +31,82 @@ Room.getRoomsForAListing = async (id) => {
       "SELECT * FROM room WHERE listing_listing_id = ?",
       [id]
     );
-    return roomQueryResult;
+
+    const roomRows = roomQueryResult[0];
+    return roomRows;
   } catch (err) {
     throw err;
   }
 };
 
+Room.createARoom = async (newRoom) => {
+  try {
+    console.log(newRoom.listing_listing_id);
+
+    const roomQueryResult = await pool.query("INSERT INTO room SET ?", [
+      newRoom,
+    ]);
+    const roomRows = roomQueryResult[0];
+    return roomRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
+Room.createRoomsForAListing = async (
+  listingInsertId,
+  listingRoomsWithRoomPhotos
+) => {
+  try {
+    const roomRowList = [];
+    const IdsOfRoomPhotosInserted = [];
+
+    for (let i = 0; i < listingRoomsWithRoomPhotos.length; i++) {
+      //TO DO: validate  photos
+
+      const newRoom = new Room({
+        room_description: listingRoomsWithRoomPhotos[i][0].room_description,
+        rent: listingRoomsWithRoomPhotos[i][0].rent,
+        deposit: listingRoomsWithRoomPhotos[i][0].deposit,
+        start_date: listingRoomsWithRoomPhotos[i][0].start_date,
+        end_date: listingRoomsWithRoomPhotos[i][0].end_date,
+
+        room_size: listingRoomsWithRoomPhotos[i][0].room_size,
+        floor: listingRoomsWithRoomPhotos[i][0].floor,
+        room_is_furnished: listingRoomsWithRoomPhotos[i][0].room_is_furnished,
+        is_en_suite: listingRoomsWithRoomPhotos[i][0].is_en_suite,
+        is_desk: listingRoomsWithRoomPhotos[i][0].is_desk,
+        is_boiler: listingRoomsWithRoomPhotos[i][0].is_boiler,
+
+        room_create_date: new Date(),
+        room_update_date: new Date(),
+
+        listing_listing_id: listingInsertId,
+      });
+
+      const roomRows = await Room.createARoom(newRoom);
+      roomRowList.push(newRoom);
+      const roomInsertId = roomRows.insertId;
+
+      const IdsOfRoomPhotosInsertedTemp = await RoomPhoto.createPhotosForARoom(
+        roomInsertId,
+        listingRoomsWithRoomPhotos[i][1]
+      );
+
+      if (i === 0) {
+        IdsOfRoomPhotosInserted.push(...IdsOfRoomPhotosInsertedTemp);
+      }
+    }
+    return {
+      roomRowList: roomRowList,
+      IdsOfRoomPhotosInserted: IdsOfRoomPhotosInserted,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+//
 Room.getRoomCountForAListing = async (id) => {
   try {
     const roomCountQueryResult = await pool.query(
@@ -75,64 +145,13 @@ Room.getMinRoomStartDateForAListing = async (id) => {
   }
 };
 
-Room.createARoom = async (newRoom) => {
-  try {
-    console.log(newRoom.listing_listing_id);
+// Room.getRoomIdsForAListing = async (id) => {
+// try {
+//   const
 
-    const roomQueryResult = await pool.query("INSERT INTO room SET ?", [
-      newRoom,
-    ]);
-    const roomRows = roomQueryResult[0];
-    return roomRows;
-  } catch (err) {
-    throw err;
-  }
-};
-
-Room.createRoomsForAListing = async (
-  listingInsertId,
-  roomListWithPhotoList
-) => {
-  try {
-    for (let i = 0; i < roomListWithPhotoList.length; i++) {
-      //TO DO: validate  photos
-
-      console.log(listingInsertId);
-
-      const newRoom = new Room({
-        room_description: roomListWithPhotoList[i][0].room_description,
-        rent: roomListWithPhotoList[i][0].rent,
-        deposit: roomListWithPhotoList[i][0].deposit,
-        start_date: roomListWithPhotoList[i][0].start_date,
-        end_date: roomListWithPhotoList[i][0].end_date,
-
-        room_size: roomListWithPhotoList[i][0].room_size,
-        floor: roomListWithPhotoList[i][0].floor,
-        room_is_furnished: roomListWithPhotoList[i][0].room_is_furnished,
-        is_en_suite: roomListWithPhotoList[i][0].is_en_suite,
-        is_desk: roomListWithPhotoList[i][0].is_desk,
-        is_boiler: roomListWithPhotoList[i][0].is_boiler,
-
-        room_create_date: new Date(),
-        room_update_date: new Date(),
-
-        listing_listing_id: listingInsertId,
-      });
-
-      const roomRows = await Room.createARoom(newRoom);
-      const roomInsertId = roomRows.insertId;
-
-      console.log(roomListWithPhotoList[i][1]);
-
-      const roomPhotoRows = await RoomPhoto.createPhotosForARoom(
-        roomInsertId,
-        roomListWithPhotoList[i][1]
-      );
-    }
-    return roomListWithPhotoList;
-  } catch (err) {
-    throw err;
-  }
-};
+// } catch (err) {
+//   throw err;
+// }
+// }
 
 module.exports = Room;

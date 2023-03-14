@@ -47,6 +47,8 @@ RoomPhoto.createAPhotoForARoom = async (newRoomPhoto) => {
 //Insert all photos for a given room ID and image list
 RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
   try {
+    const IdsOfRoomPhotosInserted = [];
+
     for (let i = 0; i < roomImageList.length; i++) {
       //TO DO: validate the room photos
       const newRoomPhoto = new RoomPhoto({
@@ -57,8 +59,9 @@ RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
       });
 
       const roomPhotoRows = await RoomPhoto.createAPhotoForARoom(newRoomPhoto);
-      return roomPhotoRows;
+      IdsOfRoomPhotosInserted.push(roomPhotoRows.insertId);
     }
+    return IdsOfRoomPhotosInserted;
   } catch (err) {
     throw err;
   }

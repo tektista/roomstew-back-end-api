@@ -181,28 +181,48 @@ Listing.getAListingById = async (id) => {
     // );
     // /////////
 
-    const roomQueryResult = await Room.getRoomsForAListing(id);
+    const roomRows = await Room.getRoomsForAListing(id);
 
-    return [listingRows, listingPhotoRows, roomQueryResult[0]];
+    return [listingRows, listingPhotoRows, roomRows[0]];
   } catch (err) {
     throw err;
   }
 };
 
-Listing.createAListing = async (newListing) => {
+Listing.createAListing = async (
+  newListing,
+  listingPhotos,
+  listingRoomsWithRoomPhotos
+) => {
   try {
-    /* 
-    1. Insert the Listing
-    2. Insert the Photos associated with this listing
-    3. Insert the Rooms associated with this listing
-    4. Insert the Room photos associated with each room
-
-     */
+    //Insert the new listing
     const listingQueryResult = await pool.query("INSERT INTO listing SET ?", [
       newListing,
     ]);
     const listingRows = listingQueryResult[0];
-    return listingRows;
+    //Get the Insert ID of the listing insert
+    const listingInsertId = listingRows.insertId;
+
+    //Insert the listing photos, using the insert ID of the listing insert
+    const IdsOfListingPhotosInserted =
+      await ListingPhoto.createPhotosForAListing(
+        listingInsertId,
+        listingPhotos
+      );
+
+    const roomsInsertedAndIdsOfRoomPhotosInserted =
+      await Room.createRoomsForAListing(
+        listingInsertId,
+        listingRoomsWithRoomPhotos
+      );
+
+    return {
+      listing: listingRows,
+      IdsOflistingPhotosInserted: IdsOfListingPhotosInserted,
+      roomsInserted: roomsInsertedAndIdsOfRoomPhotosInserted.roomRowList,
+      IdsOfRoomPhotosInserted:
+        roomsInsertedAndIdsOfRoomPhotosInserted.IdsOfRoomPhotosInserted,
+    };
   } catch (err) {
     throw err;
   }

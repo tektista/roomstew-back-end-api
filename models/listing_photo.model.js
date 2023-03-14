@@ -65,17 +65,20 @@ ListingPhoto.createAPhotoForAListing = async (newListingPhoto) => {
      with a listing_listing id pointing to the current listing
      Then add this to the database
      */
+
 //Insert all photos for a given listing ID and image list
 ListingPhoto.createPhotosForAListing = async (
   listingInsertId,
-  listingImageList
+  listingPhotos
 ) => {
   try {
-    for (let i = 0; i < listingImageList.length; i++) {
+    const IdsOfListingPhotosInserted = [];
+
+    for (let i = 0; i < listingPhotos.length; i++) {
       //TO DO: validate the listing photos
       const newListingPhoto = new ListingPhoto({
-        listing_photo: listingImageList[i].listing_photo,
-        listing_photo_order: listingImageList[i].listing_photo_order,
+        listing_photo: listingPhotos[i].listing_photo,
+        listing_photo_order: listingPhotos[i].listing_photo_order,
         listing_photo_create_date: new Date(),
         listing_listing_id: listingInsertId,
       });
@@ -83,8 +86,10 @@ ListingPhoto.createPhotosForAListing = async (
       const listingPhotoRows = await ListingPhoto.createAPhotoForAListing(
         newListingPhoto
       );
-      return listingPhotoRows;
+
+      IdsOfListingPhotosInserted.push(listingPhotoRows.insertId);
     }
+    return IdsOfListingPhotosInserted;
   } catch (err) {
     throw err;
   }
