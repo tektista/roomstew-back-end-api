@@ -80,11 +80,17 @@ Listing.findAllListings = async (req) => {
 
       const minRoomRent = minRoomRentForAListingQueryResult[0][0].min_rent;
 
-      //return the date of the room with the earliest available date
-      const earliestRoomDate = roomRows.reduce((minDate, room) => {
-        const roomDate = new Date(room.start_date);
-        return roomDate < minDate ? roomDate : minDate;
-      }, new Date("9999-12-31"));
+      const minRoomStartDateForAListingQueryResult =
+        await Room.getMinRoomStartDateForAListing(listing.listing_id);
+
+      const minRoomStartDate =
+        minRoomStartDateForAListingQueryResult[0][0].min_start_date;
+
+      //This cant be in DB bec start_date is type date, and end_date is string meaning we cant compare them in the db
+      // const earliestRoomDate = roomRows.reduce((minDate, room) => {
+      //   const roomDate = new Date(room.start_date);
+      //   return roomDate < minDate ? roomDate : minDate;
+      // }, new Date("9999-12-31"));
 
       /*
       
@@ -106,7 +112,7 @@ Listing.findAllListings = async (req) => {
         dateAdded: listing.listing_create_date,
         numRoomsAvailable: roomCount,
         minRoomRent: minRoomRent,
-        earliestRoomDateAvailable: earliestRoomDate,
+        earliestRoomDateAvailable: minRoomStartDate,
       };
       cardList.push(Card);
     }

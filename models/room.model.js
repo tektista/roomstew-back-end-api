@@ -62,6 +62,19 @@ Room.getMinRoomRentForAListing = async (id) => {
   }
 };
 
+Room.getMinRoomStartDateForAListing = async (id) => {
+  try {
+    const minStartDateQueryResult = await pool.query(
+      "SELECT MIN(DATE(start_date)) AS min_start_date FROM room WHERE listing_listing_id = ?",
+      [id]
+    );
+    console.log(minStartDateQueryResult);
+    return minStartDateQueryResult;
+  } catch (err) {
+    throw err;
+  }
+};
+
 Room.createARoom = async (newRoom) => {
   try {
     console.log(newRoom.listing_listing_id);
