@@ -60,19 +60,25 @@ Listing.findAllListings = async (req) => {
     for (const listing of listingRows) {
       //retrieve a list of rooms for this listing
 
-      const roomQueryResult = await Room.getRoomsForListing(listing.listing_id);
+      // // //should probably be a function in room.model.js that just returns the c
+      // const roomQueryResult = await Room.getRoomsForAListing(
+      //   listing.listing_id
+      // );
+      // //list of room objects
+      // const roomRows = roomQueryResult[0];
+      // //return number of rooms for this listng
+      // const numOfRooms = roomRows.length;
 
-      //list of room objects
-      const roomRows = roomQueryResult[0];
-
-      //return number of rooms for this listng
-      const numOfRooms = roomRows.length;
-
-      //return the rent of the room with the lowest rent
-      const minRoomRent = roomRows.reduce(
-        (min, room) => (room.rent < min ? room.rent : min),
-        Infinity
+      const roomCountQueryResult = await Room.getRoomCountForAListing(
+        listing.listing_id
       );
+
+      const roomCount = roomCountQueryResult[0][0].count;
+
+      const minRoomRentForAListingQueryResult =
+        await Room.getMinRoomRentForAListing(listing.listing_id);
+
+      const minRoomRent = minRoomRentForAListingQueryResult[0][0].min_rent;
 
       //return the date of the room with the earliest available date
       const earliestRoomDate = roomRows.reduce((minDate, room) => {
@@ -98,11 +104,10 @@ Listing.findAllListings = async (req) => {
         city: listing.city,
         postcode: listing.postcode,
         dateAdded: listing.listing_create_date,
-        numRoomsAvailable: numOfRooms,
+        numRoomsAvailable: roomCount,
         minRoomRent: minRoomRent,
         earliestRoomDateAvailable: earliestRoomDate,
       };
-
       cardList.push(Card);
     }
 
@@ -153,7 +158,6 @@ Listing.findAListingById = async (id) => {
       `SELECT * FROM listing_photo WHERE listing_listing_id = ?`,
       [id]
     );
-
     const photoRows = photoQueryResult[0];
 
     const formattedPhotoRows = [];
@@ -170,6 +174,9 @@ Listing.findAListingById = async (id) => {
     formattedPhotoRows.sort(
       (a, b) => a.listingPhotoOrder - b.listingPhotoOrder
     );
+
+    const roomQueryResult = await Room.getRoomsForAListing(id);
+
     return [listingRows, formattedPhotoRows];
   } catch (err) {
     throw err;

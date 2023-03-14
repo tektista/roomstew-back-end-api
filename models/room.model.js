@@ -25,14 +25,38 @@ the listing model
 */
 
 //validate inside here
-
-Room.getRoomsForListing = async (id) => {
+Room.getRoomsForAListing = async (id) => {
   try {
     const roomQueryResult = await pool.query(
       "SELECT * FROM room WHERE listing_listing_id = ?",
       [id]
     );
     return roomQueryResult;
+  } catch (err) {
+    throw err;
+  }
+};
+
+Room.getRoomCountForAListing = async (id) => {
+  try {
+    const roomCountQueryResult = await pool.query(
+      "SELECT COUNT(*) AS count FROM room WHERE listing_listing_id = ?",
+      [id]
+    );
+
+    return roomCountQueryResult;
+  } catch (err) {
+    throw err;
+  }
+};
+
+Room.getMinRoomRentForAListing = async (id) => {
+  try {
+    const minRoomRentForAListingQueryResult = await pool.query(
+      "SELECT MIN(rent) AS min_rent FROM room WHERE listing_listing_id = ?",
+      [id]
+    );
+    return minRoomRentForAListingQueryResult;
   } catch (err) {
     throw err;
   }
