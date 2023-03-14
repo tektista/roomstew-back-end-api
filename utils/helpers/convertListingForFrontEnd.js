@@ -27,8 +27,6 @@ const convertListingForFrontEnd = (listingObj) => {
     ? (listing.has_parking = "Yes")
     : (listing.has_parking = "No");
 
-  listing.age_preference = `${listing.min_age} - ${listing.max_age}`;
-
   listing.couples_allowed == 1
     ? (listing.couples_allowed = "Allowed")
     : (listing.couples_allowed = "Not Allowed");
@@ -59,6 +57,10 @@ const convertListingForFrontEnd = (listingObj) => {
   }
   if (listing.gender_preference == 2) {
     listing.gender_preference = "Any";
+  }
+
+  if (listing.hasOwnProperty("age_preference")) {
+    listing.age_preference = `${listing.min_age} - ${listing.max_age}`;
   }
 
   // Card Listings
