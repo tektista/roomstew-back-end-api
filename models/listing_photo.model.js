@@ -12,21 +12,42 @@ the listing model
 */
 
 //get all photos for a listing
-ListingPhoto.getPhotosForListing = async (id) => {
+ListingPhoto.getPhotosForAListing = async (id) => {
   try {
     const listingPhotoQueryResult = await pool.query(
       "SELECT * FROM listing_photo WHERE listing_listing_id = ?",
       [id]
     );
     const listingPhotoRows = listingPhotoQueryResult[0];
+    console.log(listingPhotoRows);
     return listingPhotoRows;
   } catch (err) {
     throw err;
   }
 };
 
+ListingPhoto.getOrderedPhotosForAListing = async (id) => {
+  try {
+    const listingPhotoQueryResult = await pool.query(
+      "SELECT * FROM listing_photo WHERE listing_listing_id = ? ORDER BY listing_photo_order ASC",
+      [id]
+    );
+    const listingPhotoRows = listingPhotoQueryResult[0];
+
+    const listingPhotoRowsWithoutId = listingPhotoRows.map(
+      (listingPhotoObj) => ({
+        listingPhoto: listingPhotoObj.listing_photo,
+      })
+    );
+
+    return listingPhotoRowsWithoutId;
+  } catch (err) {
+    throw err;
+  }
+};
+
 //create one listing photo
-ListingPhoto.createAListingPhoto = async (newListingPhoto) => {
+ListingPhoto.createAPhotoForAListing = async (newListingPhoto) => {
   try {
     const listingPhotoQueryResult = await pool.query(
       "INSERT INTO listing_photo SET ?",
@@ -45,7 +66,7 @@ ListingPhoto.createAListingPhoto = async (newListingPhoto) => {
      Then add this to the database
      */
 //Insert all photos for a given listing ID and image list
-ListingPhoto.createListingPhotos = async (
+ListingPhoto.createPhotosForAListing = async (
   listingInsertId,
   listingImageList
 ) => {
@@ -59,7 +80,7 @@ ListingPhoto.createListingPhotos = async (
         listing_listing_id: listingInsertId,
       });
 
-      const listingPhotoRows = await ListingPhoto.createAListingPhoto(
+      const listingPhotoRows = await ListingPhoto.createAPhotoForAListing(
         newListingPhoto
       );
       return listingPhotoRows;

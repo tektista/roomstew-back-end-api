@@ -9,7 +9,7 @@ const { listingSchema } = require("../schemas/listing.schema");
 
 const getAllListings = async (req, res, next) => {
   try {
-    const result = await Listing.findAllListings(req);
+    const result = await Listing.getAllListings(req);
     res.status(200).json(result);
   } catch (err) {
     return next(err);
@@ -18,7 +18,7 @@ const getAllListings = async (req, res, next) => {
 
 const getAListingById = async (req, res, next) => {
   try {
-    const listingAndPhotos = await Listing.findAListingById(req.params.id);
+    const listingAndPhotos = await Listing.getAListingById(req.params.id);
 
     if (listingAndPhotos[0].length) {
       res.status(200).json(listingAndPhotos);
@@ -37,9 +37,8 @@ const getAListingById = async (req, res, next) => {
 3. For each room, post the room, then post the images for that associated room
 
 */
-const postAListing = async (req, res, next) => {
+const createAListing = async (req, res, next) => {
   try {
-    // console.log(req.body);
     const listing = req.body[0];
     const listingImageList = req.body[1];
     const listingRoomListWithPhotoList = req.body[2];
@@ -82,13 +81,13 @@ const postAListing = async (req, res, next) => {
     const listingInsertId = listingRows.insertId;
 
     //Insert the listing images
-    const listingPhotoRows = await ListingPhoto.createListingPhotos(
+    const listingPhotoRows = await ListingPhoto.createPhotosForAListing(
       listingInsertId,
       listingImageList
     );
 
     // retrieve each insert id
-    const roomListWithPhotoList = await Room.createRooms(
+    const roomListWithPhotoList = await Room.createRoomsForAListing(
       listingInsertId,
       listingRoomListWithPhotoList
     );
@@ -150,7 +149,7 @@ const deleteAListingById = async (req, res, next) => {
 module.exports = {
   getAllListings,
   getAListingById,
-  postAListing,
+  createAListing,
   putAListingById,
   deleteAListingById,
 };

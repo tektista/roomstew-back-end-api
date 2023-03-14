@@ -1,6 +1,7 @@
 //Description: The model for a listing and functions that only interacs with listings in the database
 const pool = require("./db.js");
 const Room = require("./room.model.js");
+const ListingPhoto = require("./listing_photo.model.js");
 
 //constructor for listing object
 const Listing = function (listing) {
@@ -42,7 +43,7 @@ const Listing = function (listing) {
 };
 
 //Function for retrieving information required for a card listing
-Listing.findAllListings = async (req) => {
+Listing.getAllListings = async (req) => {
   const limit = 1;
   const offset = req.query.offset;
   let listingQuery = `SELECT * FROM listing LIMIT ${limit} OFFSET ${offset}`;
@@ -72,7 +73,6 @@ Listing.findAllListings = async (req) => {
       const roomCountQueryResult = await Room.getRoomCountForAListing(
         listing.listing_id
       );
-
       const roomCount = roomCountQueryResult[0][0].count;
 
       const minRoomRentForAListingQueryResult =
@@ -85,12 +85,6 @@ Listing.findAllListings = async (req) => {
 
       const minRoomStartDate =
         minRoomStartDateForAListingQueryResult[0][0].min_start_date;
-
-      //This cant be in DB bec start_date is type date, and end_date is string meaning we cant compare them in the db
-      // const earliestRoomDate = roomRows.reduce((minDate, room) => {
-      //   const roomDate = new Date(room.start_date);
-      //   return roomDate < minDate ? roomDate : minDate;
-      // }, new Date("9999-12-31"));
 
       /*
       
@@ -152,7 +146,7 @@ Listing.findAllListings = async (req) => {
 };
 
 //function for retrieving information needed for a cards details
-Listing.findAListingById = async (id) => {
+Listing.getAListingById = async (id) => {
   try {
     const listingQueryResult = await pool.query(
       `SELECT * FROM listing WHERE listing_id = ?`,
@@ -160,30 +154,36 @@ Listing.findAListingById = async (id) => {
     );
     const listingRows = listingQueryResult[0];
 
-    const photoQueryResult = await pool.query(
-      `SELECT * FROM listing_photo WHERE listing_listing_id = ?`,
-      [id]
-    );
-    const photoRows = photoQueryResult[0];
+    const listingPhotoRows = await ListingPhoto.getOrderedPhotosForAListing(id);
 
-    const formattedPhotoRows = [];
+    // //Photo handling
+    // const photoQueryResult = await pool.query(
+    //   `SELECT * FROM listing_photo WHERE listing_listing_id = ?`,
+    //   [id]
+    // );
+    // //We return a list of photo objects
 
-    // sort and format photo rows for use in front end
-    photoRows.forEach((photoObj) => {
-      const formattedPhotoObj = {
-        listingPhoto: photoObj.listing_photo,
-      };
+    // const photoRows = photoQueryResult[0];
 
-      formattedPhotoRows.push(formattedPhotoObj);
-    });
+    // const formattedPhotoRows = [];
 
-    formattedPhotoRows.sort(
-      (a, b) => a.listingPhotoOrder - b.listingPhotoOrder
-    );
+    // // sort and format photo rows for use in front end//////
+    // photoRows.forEach((photoObj) => {
+    //   const formattedPhotoObj = {
+    //     listingPhoto: photoObj.listing_photo,
+    //   };
+
+    //   formattedPhotoRows.push(formattedPhotoObj);
+    // });
+
+    // formattedPhotoRows.sort(
+    //   (a, b) => a.listingPhotoOrder - b.listingPhotoOrder
+    // );
+    // /////////
 
     const roomQueryResult = await Room.getRoomsForAListing(id);
 
-    return [listingRows, formattedPhotoRows];
+    return [listingRows, listingPhotoRows, roomQueryResult[0]];
   } catch (err) {
     throw err;
   }

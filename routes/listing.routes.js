@@ -13,7 +13,7 @@ listingsRouter.get("/", listing.getAllListings);
 listingsRouter.get("/:id", listing.getAListingById);
 
 //route to create a listing
-listingsRouter.post("/", listing.postAListing);
+listingsRouter.post("/", listing.createAListing);
 
 //route to update a listing
 listingsRouter.put("/:id", listing.putAListingById);

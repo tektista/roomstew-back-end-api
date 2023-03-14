@@ -12,7 +12,7 @@ the room model
 */
 
 //get all photos for a room
-RoomPhoto.getPhotosForRoom = async (id) => {
+RoomPhoto.getPhotosForARoom = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
       "SELECT * FROM room_photo WHERE room_room_id = ?",
@@ -26,7 +26,7 @@ RoomPhoto.getPhotosForRoom = async (id) => {
 };
 
 //create one room photo
-RoomPhoto.createARoomPhoto = async (newRoomPhoto) => {
+RoomPhoto.createAPhotoForARoom = async (newRoomPhoto) => {
   try {
     const roomPhotoQueryResult = await pool.query(
       "INSERT INTO room_photo SET ?",
@@ -45,7 +45,7 @@ RoomPhoto.createARoomPhoto = async (newRoomPhoto) => {
      Then add this to the database
      */
 //Insert all photos for a given room ID and image list
-RoomPhoto.createRoomPhotos = async (roomInsertId, roomImageList) => {
+RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
   try {
     for (let i = 0; i < roomImageList.length; i++) {
       //TO DO: validate the room photos
@@ -56,7 +56,7 @@ RoomPhoto.createRoomPhotos = async (roomInsertId, roomImageList) => {
         room_room_id: roomInsertId,
       });
 
-      const roomPhotoRows = await RoomPhoto.createARoomPhoto(newRoomPhoto);
+      const roomPhotoRows = await RoomPhoto.createAPhotoForARoom(newRoomPhoto);
       return roomPhotoRows;
     }
   } catch (err) {

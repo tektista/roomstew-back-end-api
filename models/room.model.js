@@ -89,7 +89,10 @@ Room.createARoom = async (newRoom) => {
   }
 };
 
-Room.createRooms = async (listingInsertId, roomListWithPhotoList) => {
+Room.createRoomsForAListing = async (
+  listingInsertId,
+  roomListWithPhotoList
+) => {
   try {
     for (let i = 0; i < roomListWithPhotoList.length; i++) {
       //TO DO: validate  photos
@@ -121,7 +124,7 @@ Room.createRooms = async (listingInsertId, roomListWithPhotoList) => {
 
       console.log(roomListWithPhotoList[i][1]);
 
-      const roomPhotoRows = await RoomPhoto.createRoomPhotos(
+      const roomPhotoRows = await RoomPhoto.createPhotosForARoom(
         roomInsertId,
         roomListWithPhotoList[i][1]
       );
