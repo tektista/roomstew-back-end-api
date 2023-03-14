@@ -27,7 +27,7 @@ const convertListingForFrontEnd = (listingObj) => {
     ? (listing.has_parking = "Yes")
     : (listing.has_parking = "No");
 
-  listing.age_preference = `${listing.min_age} - ${listing.min_age}`;
+  listing.age_preference = `${listing.min_age} - ${listing.max_age}`;
 
   listing.couples_allowed == 1
     ? (listing.couples_allowed = "Allowed")
@@ -59,6 +59,20 @@ const convertListingForFrontEnd = (listingObj) => {
   }
   if (listing.gender_preference == 2) {
     listing.gender_preference = "Any";
+  }
+
+  // Card Listings
+  if (listing.hasOwnProperty("earliestRoomDateAvailable")) {
+    const currentDate = new Date();
+    const earliestDate = new Date(listing.earliestRoomDateAvailable);
+
+    if (earliestDate <= currentDate) {
+      listing.earliestRoomDateAvailable = "Now";
+    }
+  }
+
+  if (listing.hasOwnProperty("dateAdded")) {
+    listing.dateAdded = listing.dateAdded.toLocaleDateString();
   }
 
   return listing;

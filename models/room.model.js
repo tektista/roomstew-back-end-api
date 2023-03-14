@@ -152,10 +152,12 @@ Room.getRoomsCardInfoForAListing = async (id) => {
     );
 
     const roomRows = roomQueryResult[0];
+
     const roomRowsCardDetails = roomRows.map((room) => ({
       room_id: room.room_id,
       rent: room.rent,
       deposit: room.deposit,
+      is_furnished: room.is_furnished,
       room_size: room.room_size,
       start_date: room.start_date,
     }));

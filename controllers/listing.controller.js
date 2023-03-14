@@ -2,6 +2,7 @@ const pool = require("../models/db");
 const Listing = require("../models/listing.model");
 const { listingSchema } = require("../schemas/listing.schema");
 const convertListingForFrontEnd = require("../utils/helpers/convertListingForFrontEnd");
+const convertRoomForFrontEnd = require("../utils/helpers/convertRoomForFrontEnd");
 
 //req is from the request when the route is called, res is the response
 //we send back to the client calling the route
@@ -9,7 +10,9 @@ const convertListingForFrontEnd = require("../utils/helpers/convertListingForFro
 const getAllListings = async (req, res, next) => {
   try {
     const result = await Listing.getAllListings(req);
-    res.status(200).json(result);
+    const convertedResult = result.map(convertListingForFrontEnd);
+    console.log(convertedResult); // apply the conversion function to each object in the list
+    res.status(200).json(convertedResult); // return the converted list
   } catch (err) {
     return next(err);
   }

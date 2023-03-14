@@ -11,6 +11,8 @@ const convertRoomForFrontEnd = (roomObj) => {
     room.room_size = room.room_size === 0 ? "Single Room" : "Double Room";
   }
 
+  //Room Card
+
   return room;
 };
 

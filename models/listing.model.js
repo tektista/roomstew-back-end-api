@@ -107,6 +107,7 @@ Listing.getAllListings = async (req) => {
         numRoomsAvailable: roomCount,
         minRoomRent: minRoomRent,
         earliestRoomDateAvailable: minRoomStartDate,
+        dateAdded: listing.listing_create_date,
       };
       cardList.push(Card);
     }
