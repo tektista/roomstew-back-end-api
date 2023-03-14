@@ -41,8 +41,6 @@ Room.getRoomsForAListing = async (id) => {
 
 Room.createARoom = async (newRoom) => {
   try {
-    console.log(newRoom.listing_listing_id);
-
     const roomQueryResult = await pool.query("INSERT INTO room SET ?", [
       newRoom,
     ]);
@@ -106,7 +104,7 @@ Room.createRoomsForAListing = async (
   }
 };
 
-//
+//For use on the listings cards on
 Room.getRoomCountForAListing = async (id) => {
   try {
     const roomCountQueryResult = await pool.query(
@@ -138,20 +136,32 @@ Room.getMinRoomStartDateForAListing = async (id) => {
       "SELECT MIN(DATE(start_date)) AS min_start_date FROM room WHERE listing_listing_id = ?",
       [id]
     );
-    console.log(minStartDateQueryResult);
     return minStartDateQueryResult;
   } catch (err) {
     throw err;
   }
 };
 
-// Room.getRoomIdsForAListing = async (id) => {
-// try {
-//   const
+//For use on the Listings Details page, for the cards of rooms
 
-// } catch (err) {
-//   throw err;
-// }
-// }
+Room.getRoomsCardInfoForAListing = async (id) => {
+  try {
+    const roomQueryResult = await pool.query(
+      "SELECT * FROM room WHERE listing_listing_id = ?",
+      [id]
+    );
+
+    const roomRows = roomQueryResult[0];
+    const roomRowsCardDetails = roomRows.map((room) => ({
+      room_id: room.room_id,
+      rent: room.rent,
+      deposit: room.deposit,
+      room_size: room.room_size,
+      start_date: room.start_date,
+    }));
+  } catch (err) {
+    throw err;
+  }
+};
 
 module.exports = Room;

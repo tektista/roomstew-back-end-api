@@ -19,7 +19,6 @@ ListingPhoto.getPhotosForAListing = async (id) => {
       [id]
     );
     const listingPhotoRows = listingPhotoQueryResult[0];
-    console.log(listingPhotoRows);
     return listingPhotoRows;
   } catch (err) {
     throw err;

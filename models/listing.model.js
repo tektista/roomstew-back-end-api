@@ -183,7 +183,7 @@ Listing.getAListingById = async (id) => {
 
     const roomRows = await Room.getRoomsForAListing(id);
 
-    return [listingRows, listingPhotoRows, roomRows[0]];
+    return [listingRows, listingPhotoRows, roomRows];
   } catch (err) {
     throw err;
   }

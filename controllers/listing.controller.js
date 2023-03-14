@@ -1,8 +1,7 @@
 const pool = require("../models/db");
 const Listing = require("../models/listing.model");
-const ListingPhoto = require("../models/listing_photo.model");
-const Room = require("../models/room.model");
 const { listingSchema } = require("../schemas/listing.schema");
+const convertListingForFrontEnd = require("../utils/helpers/convertListingForFrontEnd");
 
 //req is from the request when the route is called, res is the response
 //we send back to the client calling the route
@@ -18,10 +17,28 @@ const getAllListings = async (req, res, next) => {
 
 const getAListingById = async (req, res, next) => {
   try {
-    const listingAndPhotos = await Listing.getAListingById(req.params.id);
+    // [ [{listingObj}], listingPhotoRows, roomRows]
+    const listingsRoomsAndPhotos = await Listing.getAListingById(req.params.id);
 
-    if (listingAndPhotos[0].length) {
-      res.status(200).json(listingAndPhotos);
+    const convertedListingObj = convertListingForFrontEnd(
+      listingsRoomsAndPhotos[0][0]
+    );
+
+    listingsRoomsAndPhotos[0][0] = convertedListingObj;
+
+    console.log(listingsRoomsAndPhotos[0][0]);
+
+    // // // assume `list` is the const variable containing the list
+    // const list = [[listingObj], listingPhotoRows, roomRows];
+
+    // // create a new object to replace `listingObj`
+    // const newListingObj = { id: 2, name: "New Listing" };
+
+    // // modify the list to replace `listingObj` with the new object
+    // list[0] = [newListingObj];
+
+    if (listingsRoomsAndPhotos[0].length) {
+      res.status(200).json(listingsRoomsAndPhotos);
     } else {
       res.status(404).json(`Listing with id ${req.params.id} does not exist`);
     }
