@@ -5,14 +5,11 @@ const ListingPhoto = require("./listing_photo.model.js");
 
 //constructor for listing object
 const Listing = function (listing) {
-  //address
   this.postcode = listing.postcode;
   this.street_address = listing.street_address;
   this.city = listing.city;
   this.country = listing.country;
-  //ADD country
 
-  //BUILDING DETAILS
   this.building_type = listing.building_type;
   this.bills_included = listing.bills_included;
   this.internet_included = listing.internet_included;
@@ -23,7 +20,6 @@ const Listing = function (listing) {
   this.has_garden = listing.has_garden;
   this.has_parking = listing.has_parking;
 
-  //PREFERENCES
   this.min_age = listing.min_age;
   this.max_age = listing.max_age;
   this.gender_preference = listing.gender_preference;
@@ -31,11 +27,9 @@ const Listing = function (listing) {
   this.smokers_allowed = listing.smokers_allowed;
   this.pets_allowed = listing.pets_allowed;
 
-  //PROPERTY DESCRIPTION
   this.title = listing.title;
   this.description = listing.description;
 
-  //TIMES
   this.is_expired = listing.is_expired;
   this.expiry_date = listing.expiry_date;
   this.listing_create_date = listing.listing_create_date;

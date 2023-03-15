@@ -1,19 +1,17 @@
-const convertRoomForFrontEnd = (roomObj) => {
-  const room = { ...roomObj };
+const convertRoomForFrontEnd = (room) => {
+  const newRoom = room;
 
-  if (room.hasOwnProperty("is_furnished")) {
-    room.is_furnished == 1
-      ? (room.is_furnished = "Yes")
-      : (room.is_furnished = "No");
+  if (newRoom.hasOwnProperty("is_furnished")) {
+    newRoom.is_furnished == 1
+      ? (newRoom.is_furnished = "Yes")
+      : (newRoom.is_furnished = "No");
   }
 
-  if (room.hasOwnProperty("room_size")) {
-    room.room_size = room.room_size === 0 ? "Single Room" : "Double Room";
+  if (newRoom.hasOwnProperty("room_size")) {
+    newRoom.room_size = newRoom.room_size === 0 ? "Single Room" : "Double Room";
   }
 
-  //Room Card
-
-  return room;
+  return newRoom;
 };
 
 module.exports = convertRoomForFrontEnd;

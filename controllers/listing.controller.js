@@ -3,6 +3,7 @@ const Listing = require("../models/listing.model");
 const { listingSchema } = require("../schemas/listing.schema");
 const convertListingForFrontEnd = require("../utils/helpers/convertListingForFrontEnd");
 const convertRoomForFrontEnd = require("../utils/helpers/convertRoomForFrontEnd");
+const convertPhotoListForFrontEnd = require("../utils/helpers/convertPhotoListForFrontEnd");
 
 //req is from the request when the route is called, res is the response
 //we send back to the client calling the route
@@ -10,9 +11,10 @@ const convertRoomForFrontEnd = require("../utils/helpers/convertRoomForFrontEnd"
 const getAllListings = async (req, res, next) => {
   try {
     const result = await Listing.getAllListings(req);
+
+    //Convert the result to the format we want to send back to the client
     const convertedResult = result.map(convertListingForFrontEnd);
-    console.log(convertedResult); // apply the conversion function to each object in the list
-    res.status(200).json(convertedResult); // return the converted list
+    res.status(200).json(convertedResult);
   } catch (err) {
     return next(err);
   }
@@ -20,28 +22,25 @@ const getAllListings = async (req, res, next) => {
 
 const getAListingById = async (req, res, next) => {
   try {
-    // [ [{listingObj}], listingPhotoRows, roomRows]
-    const listingsRoomsAndPhotos = await Listing.getAListingById(req.params.id);
-
-    const convertedListingObj = convertListingForFrontEnd(
-      listingsRoomsAndPhotos[0][0]
+    // [ [{listingObj}], [{listingPhotoObj}...], [{roomObj}...]  ]
+    const listingsAndListingPhotosAndRooms = await Listing.getAListingById(
+      req.params.id
     );
 
-    listingsRoomsAndPhotos[0][0] = convertedListingObj;
+    //convert the ListingObj then assign it back to the array
+    const convertedListingObj = convertListingForFrontEnd(
+      listingsAndListingPhotosAndRooms[0][0]
+    );
+    listingsAndListingPhotosAndRooms[0][0] = convertedListingObj;
 
-    console.log(listingsRoomsAndPhotos[0][0]);
+    //convert the listingPhotoObjList  then assign it back to the array
+    const convertedPhotoObjList = convertPhotoListForFrontEnd(
+      listingsAndListingPhotosAndRooms[1]
+    );
+    listingsAndListingPhotosAndRooms[1] = convertedPhotoObjList;
 
-    // // // assume `list` is the const variable containing the list
-    // const list = [[listingObj], listingPhotoRows, roomRows];
-
-    // // create a new object to replace `listingObj`
-    // const newListingObj = { id: 2, name: "New Listing" };
-
-    // // modify the list to replace `listingObj` with the new object
-    // list[0] = [newListingObj];
-
-    if (listingsRoomsAndPhotos[0].length) {
-      res.status(200).json(listingsRoomsAndPhotos);
+    if (listingsAndListingPhotosAndRooms[0].length) {
+      res.status(200).json(listingsAndListingPhotosAndRooms);
     } else {
       res.status(404).json(`Listing with id ${req.params.id} does not exist`);
     }
