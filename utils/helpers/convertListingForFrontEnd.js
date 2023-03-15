@@ -1,83 +1,83 @@
 //This is a helper function to help convert the values from the listing of the database to the values that are displayed on the listing details screen. This is to help with the consistency of the data displayed on the listing details screen.
 
 const convertListingForFrontEnd = (listingObj) => {
-  const listing = { ...listingObj };
+  const newListing = listingObj;
 
-  listing.is_furnished == 1
-    ? (listing.is_furnished = "Yes")
-    : (listing.is_furnished = "No");
+  newListing.is_furnished == 1
+    ? (newListing.is_furnished = "Yes")
+    : (newListing.is_furnished = "No");
 
-  listing.bills_included == 1
-    ? (listing.bills_included = "Included")
-    : (listing.bills_included = "Not included");
+  newListing.bills_included == 1
+    ? (newListing.bills_included = "Included")
+    : (newListing.bills_included = "Not included");
 
-  listing.internet_included == 1
-    ? (listing.internet_included = "Included")
-    : (listing.internet_included = "Not included");
+  newListing.internet_included == 1
+    ? (newListing.internet_included = "Included")
+    : (newListing.internet_included = "Not included");
 
-  listing.has_living_room == 1
-    ? (listing.has_living_room = "Yes")
-    : (listing.has_living_room = "No");
+  newListing.has_living_room == 1
+    ? (newListing.has_living_room = "Yes")
+    : (newListing.has_living_room = "No");
 
-  listing.has_garden == 1
-    ? (listing.had_garden = "Yes")
-    : (listing.has_garden = "No");
+  newListing.has_garden == 1
+    ? (newListing.had_garden = "Yes")
+    : (newListing.has_garden = "No");
 
-  listing.has_parking == 1
-    ? (listing.has_parking = "Yes")
-    : (listing.has_parking = "No");
+  newListing.has_parking == 1
+    ? (newListing.has_parking = "Yes")
+    : (newListing.has_parking = "No");
 
-  listing.couples_allowed == 1
-    ? (listing.couples_allowed = "Allowed")
-    : (listing.couples_allowed = "Not Allowed");
+  newListing.couples_allowed == 1
+    ? (newListing.couples_allowed = "Allowed")
+    : (newListing.couples_allowed = "Not Allowed");
 
-  listing.smokers_allowed == 1
-    ? (listing.smokers_allowed = "Allowed")
-    : (listing.smokers_allowed = "Not Allowed");
+  newListing.smokers_allowed == 1
+    ? (newListing.smokers_allowed = "Allowed")
+    : (newListing.smokers_allowed = "Not Allowed");
 
-  listing.pets_allowed == 1
-    ? (listing.pets_allowed = "Allowed")
-    : (listing.pets_allowed = "Not Allowed");
+  newListing.pets_allowed == 1
+    ? (newListing.pets_allowed = "Allowed")
+    : (newListing.pets_allowed = "Not Allowed");
 
-  if (listing.building_type == 0) {
-    listing.building_type = "Flat";
+  if (newListing.building_type == 0) {
+    newListing.building_type = "Flat";
   }
-  if (listing.building_type == 1) {
-    listing.building_type = "House";
+  if (newListing.building_type == 1) {
+    newListing.building_type = "House";
   }
-  if (listing.building_type == 2) {
-    listing.building_type = "Other";
-  }
-
-  if (listing.gender_preference == 0) {
-    listing.gender_preference = "Female only";
-  }
-  if (listing.gender_preference == 1) {
-    listing.gender_preference = "Male only";
-  }
-  if (listing.gender_preference == 2) {
-    listing.gender_preference = "Any";
+  if (newListing.building_type == 2) {
+    newListing.building_type = "Other";
   }
 
-  if (listing.hasOwnProperty("age_preference")) {
-    listing.age_preference = `${listing.min_age} - ${listing.max_age}`;
+  if (newListing.gender_preference == 0) {
+    newListing.gender_preference = "Female only";
+  }
+  if (newListing.gender_preference == 1) {
+    newListing.gender_preference = "Male only";
+  }
+  if (newListing.gender_preference == 2) {
+    newListing.gender_preference = "Any";
+  }
+
+  if (newListing.hasOwnProperty("age_preference")) {
+    newListing.age_preference = `${newListing.min_age} - ${newListing.max_age}`;
   }
 
   // Card Listings
-  if (listing.hasOwnProperty("earliestRoomDateAvailable")) {
+  if (newListing.hasOwnProperty("earliestRoomDateAvailable")) {
     const currentDate = new Date();
-    const earliestDate = new Date(listing.earliestRoomDateAvailable);
+    const earliestDate = new Date(newListing.earliestRoomDateAvailable);
 
     if (earliestDate <= currentDate) {
-      listing.earliestRoomDateAvailable = "Now";
+      newListing.earliestRoomDateAvailable = "Now";
     }
   }
 
-  if (listing.hasOwnProperty("dateAdded")) {
-    listing.dateAdded = listing.dateAdded.toLocaleDateString();
+  if (newListing.hasOwnProperty("dateAdded")) {
+    newListing.dateAdded = newListing.dateAdded.toLocaleDateString();
   }
 
-  return listing;
+  return newListing;
 };
 
 module.exports = convertListingForFrontEnd;

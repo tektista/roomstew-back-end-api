@@ -47,8 +47,6 @@ const convertPhotoListForFrontEnd = (photoObjList) => {
     };
   });
 
-  console.log(photoObjListWithDataUrls);
-
   return photoObjListWithDataUrls;
 };
 

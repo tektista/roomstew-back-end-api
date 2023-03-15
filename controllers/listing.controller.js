@@ -22,25 +22,34 @@ const getAllListings = async (req, res, next) => {
 
 const getAListingById = async (req, res, next) => {
   try {
+    //{listingObj: {listingObj}, listingPhotoObjList: [{listingPhoto}], roomObjList: [{roomObj}]}
     // [ [{listingObj}], [{listingPhotoObj}...], [{roomObj}...]  ]
-    const listingsAndListingPhotosAndRooms = await Listing.getAListingById(
-      req.params.id
+
+    // const listingsAndListingPhotosAndRooms = await Listing.getAListingById(
+    //   req.params.id
+    // );
+
+    // //convert the ListingObj then assign it back to the array
+    // const convertedListingObj = convertListingForFrontEnd(
+    //   listingsAndListingPhotosAndRooms[0][0]
+    // );
+    // listingsAndListingPhotosAndRooms[0][0] = convertedListingObj;
+
+    // //convert the listingPhotoObjList  then assign it back to the array
+    // const convertedPhotoObjList = convertPhotoListForFrontEnd(
+    //   listingsAndListingPhotosAndRooms[1]
+    // );
+    // listingsAndListingPhotosAndRooms[1] = convertedPhotoObjList;
+
+    const response = await Listing.getAListingById(req.params.id);
+
+    response.listingObj = convertListingForFrontEnd(response.listingObj[0]);
+    response.listingPhotoObjList = convertPhotoListForFrontEnd(
+      response.listingPhotoObjList
     );
 
-    //convert the ListingObj then assign it back to the array
-    const convertedListingObj = convertListingForFrontEnd(
-      listingsAndListingPhotosAndRooms[0][0]
-    );
-    listingsAndListingPhotosAndRooms[0][0] = convertedListingObj;
-
-    //convert the listingPhotoObjList  then assign it back to the array
-    const convertedPhotoObjList = convertPhotoListForFrontEnd(
-      listingsAndListingPhotosAndRooms[1]
-    );
-    listingsAndListingPhotosAndRooms[1] = convertedPhotoObjList;
-
-    if (listingsAndListingPhotosAndRooms[0].length) {
-      res.status(200).json(listingsAndListingPhotosAndRooms);
+    if (response) {
+      res.status(200).json(response);
     } else {
       res.status(404).json(`Listing with id ${req.params.id} does not exist`);
     }
