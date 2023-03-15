@@ -64,6 +64,10 @@ Listing.getAllListings = async (req) => {
       // //return number of rooms for this listng
       // const numOfRooms = roomRows.length;
 
+      // const listingPhotoRows = await ListingPhoto.getThumbnailForAListing(
+      //   listing.id
+      // );
+
       const roomCountQueryResult = await Room.getRoomCountForAListing(
         listing.listing_id
       );

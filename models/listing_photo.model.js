@@ -11,6 +11,17 @@ const ListingPhoto = function (listingPhoto) {
 the listing model
 */
 
+ListingPhoto.getThumbnailForAListing = async (id) => {
+  try {
+    const listingPhotoQueryResult = await pool.query(
+      "SELECT * FROM listing_photo WHERE listing_listing_id = ? ORDER BY listing_photo_order ASC LIMIT 1"
+    );
+    const listingPhotoRows = listingPhotoQueryResult[0];
+  } catch (err) {
+    throw err;
+  }
+};
+
 //get all photos for a listing
 ListingPhoto.getPhotosForAListing = async (id) => {
   try {

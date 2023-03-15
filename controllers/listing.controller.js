@@ -41,15 +41,17 @@ const getAListingById = async (req, res, next) => {
     // );
     // listingsAndListingPhotosAndRooms[1] = convertedPhotoObjList;
 
-    const response = await Listing.getAListingById(req.params.id);
+    const ListingDataObj = await Listing.getAListingById(req.params.id);
 
-    response.listingObj = convertListingForFrontEnd(response.listingObj[0]);
-    response.listingPhotoObjList = convertPhotoListForFrontEnd(
-      response.listingPhotoObjList
+    ListingDataObj.listingObj = convertListingForFrontEnd(
+      ListingDataObj.listingObj[0]
+    );
+    ListingDataObj.listingPhotoObjList = convertPhotoListForFrontEnd(
+      ListingDataObj.listingPhotoObjList
     );
 
-    if (response) {
-      res.status(200).json(response);
+    if (ListingDataObj) {
+      res.status(200).json(ListingDataObj);
     } else {
       res.status(404).json(`Listing with id ${req.params.id} does not exist`);
     }
