@@ -5,7 +5,7 @@ const Room = require("../models/room.model");
 const { listingSchema } = require("../schemas/listing.schema");
 const convertListingForFrontEnd = require("../utils/helpers/convertListingForFrontEnd");
 const convertRoomForFrontEnd = require("../utils/helpers/convertRoomForFrontEnd");
-const convertPhotoListForFrontEnd = require("../utils/helpers/convertPhotoListForFrontEnd");
+
 const convertListingCardForFrontEnd = require("../utils/helpers/convertListingCardForFrontEnd");
 //req is from the request when the route is called, res is the response
 //we send back to the client calling the route
@@ -69,20 +69,36 @@ const getAllListings = async (req, res, next) => {
   }
 };
 
+/* 
+
+1. Get a ListingById
+2. Get all the ListingPhotos associated with this Listing
+3. Get all the Room Ids associated with this Listing
+
+*/
 const getAListingById = async (req, res, next) => {
   try {
     //{listingObj: [{listingObj}], listingPhotoObjList: [{listingPhoto}...], listingRoomIdList: [1,2,3] }
-    const listingDataObj = await Listing.getAListingById(req.params.id);
+    //
 
-    listingDataObj.listingObj[0] = convertListingForFrontEnd(
-      listingDataObj.listingObj[0]
-    );
+    const listingId = req.params.id;
 
-    if (listingDataObj) {
-      res.status(200).json(listingDataObj);
-    } else {
-      res.status(404).json(`Listing with id ${req.params.id} does not exist`);
-    }
+    const listingRows = await Listing.getAListingById(listingId);
+
+    const listingPhotoRows = await ListingPhoto.getPhotosForAListing(listingId);
+
+    const listingRoomCardDetailsRows =
+      await Room.getRoomsCardDetailsForAListing(listingId);
+
+    const listingDataObj = {
+      listingObj: listingRows,
+      listingPhotoObjList: listingPhotoRows,
+      listingRoomCardDetailsList: listingRoomCardDetailsRows,
+    };
+
+    console.log(listingDataObj);
+
+    res.status(200).json(listingDataObj);
   } catch (err) {
     return next(err);
   }

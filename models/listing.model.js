@@ -61,41 +61,7 @@ Listing.getAListingById = async (id) => {
       [id]
     );
     const listingRows = listingQueryResult[0];
-
-    const listingPhotoRows = await ListingPhoto.getOrderedPhotosForAListing(id);
-
-    const roomRows = await Room.getRoomsForAListing(id);
-
-    // //Photo handling
-    // const photoQueryResult = await pool.query(
-    //   `SELECT * FROM listing_photo WHERE listing_listing_id = ?`,
-    //   [id]
-    // );
-    // //We return a list of photo objects
-
-    // const photoRows = photoQueryResult[0];
-
-    // const formattedPhotoRows = [];
-
-    // // sort and format photo rows for use in front end//////
-    // photoRows.forEach((photoObj) => {
-    //   const formattedPhotoObj = {
-    //     listingPhoto: photoObj.listing_photo,
-    //   };
-
-    //   formattedPhotoRows.push(formattedPhotoObj);
-    // });
-
-    // formattedPhotoRows.sort(
-    //   (a, b) => a.listingPhotoOrder - b.listingPhotoOrder
-    // );
-    // /////////
-
-    return {
-      listingObj: listingRows,
-      listingPhotoObjList: listingPhotoRows,
-      listingRoomIdList: roomRows,
-    };
+    return listingRows;
   } catch (err) {
     throw err;
   }

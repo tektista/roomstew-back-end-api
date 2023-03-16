@@ -39,6 +39,20 @@ Room.getRoomsForAListing = async (id) => {
   }
 };
 
+Room.getRoomsCardDetailsForAListing = async (id) => {
+  try {
+    const roomQueryResult = await pool.query(
+      "SELECT room_id, rent, deposit, is_furnished, room_size, start_date FROM room WHERE listing_listing_id = ?",
+      [id]
+    );
+
+    const roomRows = roomQueryResult[0];
+    return roomRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
 Room.createARoom = async (newRoom) => {
   try {
     const roomQueryResult = await pool.query("INSERT INTO room SET ?", [
