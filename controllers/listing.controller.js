@@ -1,20 +1,69 @@
 const pool = require("../models/db");
 const Listing = require("../models/listing.model");
+const ListingPhoto = require("../models/listing_photo.model");
+const Room = require("../models/room.model");
 const { listingSchema } = require("../schemas/listing.schema");
 const convertListingForFrontEnd = require("../utils/helpers/convertListingForFrontEnd");
 const convertRoomForFrontEnd = require("../utils/helpers/convertRoomForFrontEnd");
 const convertPhotoListForFrontEnd = require("../utils/helpers/convertPhotoListForFrontEnd");
-
+const convertListingCardForFrontEnd = require("../utils/helpers/convertListingCardForFrontEnd");
 //req is from the request when the route is called, res is the response
 //we send back to the client calling the route
 
 const getAllListings = async (req, res, next) => {
   try {
-    const result = await Listing.getAllListings(req);
+    const cardList = [];
 
-    //Convert the result to the format we want to send back to the client
-    const convertedResult = result.map(convertListingForFrontEnd);
-    res.status(200).json(convertedResult);
+    const listingRows = await Listing.getAllListings(req);
+
+    for (const listing of listingRows) {
+      const listingPhotoRows = await ListingPhoto.getThumbnailForAListing(
+        listing.listing_id
+      );
+
+      const listingPhotoRowsWithOnlyBlobData = listingPhotoRows.map(
+        ({ listing_photo }) => {
+          return { listing_photo };
+        }
+      );
+
+      // Now you can use the filteredListingPhotoRows list for further processing
+
+      const roomCountQueryResult = await Room.getRoomCountForAListing(
+        listing.listing_id
+      );
+
+      const roomCount = roomCountQueryResult[0][0].count;
+
+      const minRoomRentForAListingQueryResult =
+        await Room.getMinRoomRentForAListing(listing.listing_id);
+      const minRoomRent = minRoomRentForAListingQueryResult[0][0].min_rent;
+
+      const minRoomStartDateForAListingQueryResult =
+        await Room.getMinRoomStartDateForAListing(listing.listing_id);
+      const minRoomStartDate =
+        minRoomStartDateForAListingQueryResult[0][0].min_start_date;
+
+      const listingCard = {
+        id: listing.listing_id,
+        title: listing.title,
+        listingPhoto: listingPhotoRowsWithOnlyBlobData,
+        streetAddress: listing.street_address,
+        city: listing.city,
+        postcode: listing.postcode,
+        dateAdded: listing.listing_create_date,
+        numRoomsAvailable: roomCount,
+        minRoomRent: minRoomRent,
+        earliestRoomDateAvailable: minRoomStartDate,
+        dateAdded: listing.listing_create_date,
+      };
+
+      const convertedListingCard = convertListingCardForFrontEnd(listingCard);
+
+      cardList.push(convertedListingCard);
+    }
+
+    res.status(200).json(cardList);
   } catch (err) {
     return next(err);
   }
@@ -22,36 +71,15 @@ const getAllListings = async (req, res, next) => {
 
 const getAListingById = async (req, res, next) => {
   try {
-    //{listingObj: {listingObj}, listingPhotoObjList: [{listingPhoto}], roomObjList: [{roomObj}]}
-    // [ [{listingObj}], [{listingPhotoObj}...], [{roomObj}...]  ]
+    //{listingObj: [{listingObj}], listingPhotoObjList: [{listingPhoto}...], listingRoomIdList: [1,2,3] }
+    const listingDataObj = await Listing.getAListingById(req.params.id);
 
-    // const listingsAndListingPhotosAndRooms = await Listing.getAListingById(
-    //   req.params.id
-    // );
-
-    // //convert the ListingObj then assign it back to the array
-    // const convertedListingObj = convertListingForFrontEnd(
-    //   listingsAndListingPhotosAndRooms[0][0]
-    // );
-    // listingsAndListingPhotosAndRooms[0][0] = convertedListingObj;
-
-    // //convert the listingPhotoObjList  then assign it back to the array
-    // const convertedPhotoObjList = convertPhotoListForFrontEnd(
-    //   listingsAndListingPhotosAndRooms[1]
-    // );
-    // listingsAndListingPhotosAndRooms[1] = convertedPhotoObjList;
-
-    const ListingDataObj = await Listing.getAListingById(req.params.id);
-
-    ListingDataObj.listingObj = convertListingForFrontEnd(
-      ListingDataObj.listingObj[0]
-    );
-    ListingDataObj.listingPhotoObjList = convertPhotoListForFrontEnd(
-      ListingDataObj.listingPhotoObjList
+    listingDataObj.listingObj[0] = convertListingForFrontEnd(
+      listingDataObj.listingObj[0]
     );
 
-    if (ListingDataObj) {
-      res.status(200).json(ListingDataObj);
+    if (listingDataObj) {
+      res.status(200).json(listingDataObj);
     } else {
       res.status(404).json(`Listing with id ${req.params.id} does not exist`);
     }

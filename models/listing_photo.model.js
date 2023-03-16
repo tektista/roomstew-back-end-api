@@ -14,9 +14,12 @@ the listing model
 ListingPhoto.getThumbnailForAListing = async (id) => {
   try {
     const listingPhotoQueryResult = await pool.query(
-      "SELECT * FROM listing_photo WHERE listing_listing_id = ? ORDER BY listing_photo_order ASC LIMIT 1"
+      "SELECT * FROM listing_photo WHERE listing_listing_id = ? ORDER BY listing_photo_order ASC LIMIT 1",
+      [id]
     );
     const listingPhotoRows = listingPhotoQueryResult[0];
+
+    return listingPhotoRows;
   } catch (err) {
     throw err;
   }
@@ -46,7 +49,7 @@ ListingPhoto.getOrderedPhotosForAListing = async (id) => {
 
     const listingPhotoRowsWithoutId = listingPhotoRows.map(
       (listingPhotoObj) => ({
-        listingPhoto: listingPhotoObj.listing_photo,
+        listing_photo: listingPhotoObj.listing_photo,
       })
     );
 

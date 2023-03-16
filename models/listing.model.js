@@ -43,102 +43,11 @@ Listing.getAllListings = async (req) => {
   let listingQuery = `SELECT * FROM listing LIMIT ${limit} OFFSET ${offset}`;
 
   try {
-    //Query to return all listings
     const listingQueryResult = await pool.query(listingQuery);
 
-    //list of listingObjects
     const listingRows = listingQueryResult[0];
 
-    const cardList = [];
-
-    //for each listing
-    for (const listing of listingRows) {
-      //retrieve a list of rooms for this listing
-
-      // // //should probably be a function in room.model.js that just returns the c
-      // const roomQueryResult = await Room.getRoomsForAListing(
-      //   listing.listing_id
-      // );
-      // //list of room objects
-      // const roomRows = roomQueryResult[0];
-      // //return number of rooms for this listng
-      // const numOfRooms = roomRows.length;
-
-      // const listingPhotoRows = await ListingPhoto.getThumbnailForAListing(
-      //   listing.id
-      // );
-
-      const roomCountQueryResult = await Room.getRoomCountForAListing(
-        listing.listing_id
-      );
-      const roomCount = roomCountQueryResult[0][0].count;
-
-      const minRoomRentForAListingQueryResult =
-        await Room.getMinRoomRentForAListing(listing.listing_id);
-
-      const minRoomRent = minRoomRentForAListingQueryResult[0][0].min_rent;
-
-      const minRoomStartDateForAListingQueryResult =
-        await Room.getMinRoomStartDateForAListing(listing.listing_id);
-
-      const minRoomStartDate =
-        minRoomStartDateForAListingQueryResult[0][0].min_start_date;
-
-      /*
-      
-      1. query to find photo objects associated with this listing_id, find the one with the lowest photo order,
-      and return the base 64 data for this photo object
-
-      2. This will be used as the thumbnail of the card 3. Convert this base 64 data to image
-
-      */
-
-      //Create a card for this listing with the following details
-      const Card = {
-        id: listing.listing_id,
-        title: listing.title,
-        thumbnail: listing.title,
-        streetAddress: listing.street_address,
-        city: listing.city,
-        postcode: listing.postcode,
-        dateAdded: listing.listing_create_date,
-        numRoomsAvailable: roomCount,
-        minRoomRent: minRoomRent,
-        earliestRoomDateAvailable: minRoomStartDate,
-        dateAdded: listing.listing_create_date,
-      };
-      cardList.push(Card);
-    }
-
-    /* 
-    1. database response will be a list of json listings
-    2. We need to send the client a list of objects in the form 
-
-    [{
-      //from list of listings json
-      title: "title",
-      image: "image",
-      dateAdded: "dateAdded",
-
-      //from room table
-      numRoomsAvailable: 3,
-      lowestRoomRent: 456,
-      lowestRoomDateAvailable: 21/12/2020,
-    }]
-
-    3. for each listing we need to: 
-    - create a card object
-    - copy title, image and date added to the card object
-    - for the current listing, query the database for rooms associated
-     with the current listing
-    - store the found rooms in a temproom list
-    -find the num of rooms, lowest room rent, lowest room date available
-    - copy these values over to the card object
-    - return this to the controller
-    */
-    // return cardList;
-
-    return cardList;
+    return listingRows;
   } catch (err) {
     throw err;
   }
@@ -154,6 +63,8 @@ Listing.getAListingById = async (id) => {
     const listingRows = listingQueryResult[0];
 
     const listingPhotoRows = await ListingPhoto.getOrderedPhotosForAListing(id);
+
+    const roomRows = await Room.getRoomsForAListing(id);
 
     // //Photo handling
     // const photoQueryResult = await pool.query(
@@ -180,8 +91,6 @@ Listing.getAListingById = async (id) => {
     // );
     // /////////
 
-    const roomRows = await Room.getRoomsForAListing(id);
-
     return {
       listingObj: listingRows,
       listingPhotoObjList: listingPhotoRows,
@@ -191,6 +100,30 @@ Listing.getAListingById = async (id) => {
     throw err;
   }
 };
+
+//
+
+/*
+In the getAllListings controller we take in [{newListing}, {listingPhotos}, {listingRoomsWithRoomPhotos]
+
+
+1. CreateAlisting -
+- insert the listing, 
+- return the insertID, and the inserted listing
+
+2. CreatePhotosForAListing -
+- insert the photos using the insertId from create a listing
+- return the ids of the photos inserted
+
+3. CreateRoomsForA Listing
+- insert the rooms using the insertId from create a listing
+- return the ids of the rooms inserted 
+
+4. CreatePhotosForARoom
+Inserted the rooms using the insert id from create a room
+- return the ids of the photos inserted
+
+*/
 
 Listing.createAListing = async (
   newListing,
