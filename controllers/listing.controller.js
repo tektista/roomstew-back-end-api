@@ -2,6 +2,7 @@ const pool = require("../models/db");
 const Listing = require("../models/listing.model");
 const ListingPhoto = require("../models/listing_photo.model");
 const Room = require("../models/room.model");
+const RoomPhoto = require("../models/room_photo.model");
 const { listingSchema } = require("../schemas/listing.schema");
 const convertListingForFrontEnd = require("../utils/helpers/convertListingForFrontEnd");
 const convertRoomForFrontEnd = require("../utils/helpers/convertRoomForFrontEnd");
@@ -96,8 +97,6 @@ const getAListingById = async (req, res, next) => {
       listingRoomCardDetailsList: listingRoomCardDetailsRows,
     };
 
-    console.log(listingDataObj);
-
     res.status(200).json(listingDataObj);
   } catch (err) {
     return next(err);
@@ -114,11 +113,14 @@ const getAListingById = async (req, res, next) => {
 const createAListing = async (req, res, next) => {
   try {
     //[ {listiingObj}, [{listingPhotoObj}...], [ [{roomObj}, [{photoObj}...]... ]  ]
+    // [{listingObj: {listingObj}, listingPhotoObjList: [{listingPhotoObj}...], listingRoomObjList: [{roomObj}...]
 
-    //
-    const listing = req.body[0];
-    const listingPhotos = req.body[1];
-    const listingRoomsWithRoomPhotos = req.body[2];
+    const listing = req.body.listingObj;
+    const listingPhotos = req.body.listingPhotoObjList;
+    const listingRoomsAndRoomPhotosObjList =
+      req.body.listingRoomsAndRoomPhotosObjList;
+
+    console.log(listingRoomsAndRoomPhotosObjList);
 
     const { error, value } = listingSchema.validate(listing);
 
@@ -154,13 +156,55 @@ const createAListing = async (req, res, next) => {
       listing_update_date: new Date(),
     });
 
-    const dataInserted = await Listing.createAListing(
-      newListing,
-      listingPhotos,
-      listingRoomsWithRoomPhotos
-    );
+    //Return the inserted listing
+    const listingInsertData = await Listing.createAListing(newListing);
+    const insertedListing = listingInsertData.insertedListing;
+    const listingInsertId = listingInsertData.listingRows.insertId;
 
-    res.status(200).json({ dataInserted });
+    //Insert the listing photos, using the returned insert id of the listing
+    const IdsOfListingPhotosInserted =
+      await ListingPhoto.createPhotosForAListing(
+        listingInsertId,
+        listingPhotos
+      );
+
+    //[ {roomObj: {roomObj}, IdsOfRoomsInserted: [1,2,3..]}... ]
+
+    const roomDataObjInsertedList = [];
+
+    console.log(listingRoomsAndRoomPhotosObjList.roomPhotoObjList);
+    //For each  obj in the list:  [ {roomObj: {roomObj}, roomObjPhotoList: [{roomPhotoObj}...] }...]
+    for (const roomDataObj of listingRoomsAndRoomPhotosObjList) {
+      //Set the listing id of the room to the insert id of the listing
+      roomDataObj.roomObj.listing_listing_id = listingInsertId;
+
+      const roomInsertData = await Room.createARoom(roomDataObj.roomObj);
+      const roomInsertId = roomInsertData.roomRows.insertId;
+      const roomPhotoObjList = roomDataObj.roomPhotoObjList;
+
+      //Insert the photos for the room, using the insert Id of the room
+      const IdsOfRoomPhotosInserted = await RoomPhoto.createPhotosForARoom(
+        roomInsertId,
+        roomPhotoObjList
+      );
+
+      const insertedRoomDataObj = {
+        roomObj: roomInsertData.insertedRoom,
+        IdsOfRoomPhotosInserted: IdsOfRoomPhotosInserted,
+      };
+
+      roomDataObjInsertedList.push(insertedRoomDataObj);
+    }
+
+    const dataInserted = {
+      listingDataInserted: {
+        insertedlistingObj: insertedListing,
+        IdsOfListingPhotosInserted: IdsOfListingPhotosInserted,
+      },
+      roomDataObjInsertedList: roomDataObjInsertedList,
+    };
+
+    res.status(200).json(dataInserted);
   } catch (err) {
     return next(err);
   }

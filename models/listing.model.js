@@ -91,7 +91,20 @@ Inserted the rooms using the insert id from create a room
 
 */
 
-Listing.createAListing = async (
+Listing.createAListing = async (newListing) => {
+  try {
+    //Insert the new listing
+    const listingQueryResult = await pool.query("INSERT INTO listing SET ?", [
+      newListing,
+    ]);
+    const listingRows = listingQueryResult[0];
+    return { listingRows: listingRows, insertedListing: newListing };
+  } catch (err) {
+    throw err;
+  }
+};
+
+Listing.createAListingOld = async (
   newListing,
   listingPhotos,
   listingRoomsWithRoomPhotos
@@ -102,6 +115,7 @@ Listing.createAListing = async (
       newListing,
     ]);
     const listingRows = listingQueryResult[0];
+
     //Get the Insert ID of the listing insert
     const listingInsertId = listingRows.insertId;
 
