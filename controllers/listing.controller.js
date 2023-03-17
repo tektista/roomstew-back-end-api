@@ -1,20 +1,19 @@
 const pool = require("../models/db");
+const convertListingCardForFrontEnd = require("../utils/helpers/convertListingCardForFrontEnd");
+
 const Listing = require("../models/listing.model");
 const ListingPhoto = require("../models/listing_photo.model");
 const Room = require("../models/room.model");
 const RoomPhoto = require("../models/room_photo.model");
-const { listingSchema } = require("../schemas/listing.schema");
-const convertListingForFrontEnd = require("../utils/helpers/convertListingForFrontEnd");
-const convertRoomForFrontEnd = require("../utils/helpers/convertRoomForFrontEnd");
 
-const convertListingCardForFrontEnd = require("../utils/helpers/convertListingCardForFrontEnd");
+const { listingSchema } = require("../schemas/listing.schema");
+
 //req is from the request when the route is called, res is the response
 //we send back to the client calling the route
 
 const getAllListings = async (req, res, next) => {
   try {
     const cardList = [];
-
     const listingRows = await Listing.getAllListings(req);
 
     for (const listing of listingRows) {
@@ -27,8 +26,6 @@ const getAllListings = async (req, res, next) => {
           return { listing_photo };
         }
       );
-
-      // Now you can use the filteredListingPhotoRows list for further processing
 
       const roomCountQueryResult = await Room.getRoomCountForAListing(
         listing.listing_id
@@ -60,32 +57,19 @@ const getAllListings = async (req, res, next) => {
       };
 
       const convertedListingCard = convertListingCardForFrontEnd(listingCard);
-
       cardList.push(convertedListingCard);
     }
-
     res.status(200).json(cardList);
   } catch (err) {
     return next(err);
   }
 };
 
-/* 
-
-1. Get a ListingById
-2. Get all the ListingPhotos associated with this Listing
-3. Get all the Room Ids associated with this Listing
-
-*/
 const getAListingById = async (req, res, next) => {
   try {
     //{listingObj: [{listingObj}], listingPhotoObjList: [{listingPhoto}...], listingRoomIdList: [1,2,3] }
-    //
-
     const listingId = req.params.id;
-
     const listingRows = await Listing.getAListingById(listingId);
-
     const listingPhotoRows = await ListingPhoto.getPhotosForAListing(listingId);
 
     const listingRoomCardDetailsRows =
@@ -97,31 +81,21 @@ const getAListingById = async (req, res, next) => {
       listingRoomCardDetailsList: listingRoomCardDetailsRows,
     };
 
-    console.log(listingDataObj);
-
     res.status(200).json(listingDataObj);
   } catch (err) {
     return next(err);
   }
 };
 
-/*
-
-1. Post the listing
-2. Post the listings images
-3. For each room, post the room, then post the images for that associated room
-
-*/
 const createAListing = async (req, res, next) => {
   try {
-    //[ {listiingObj}, [{listingPhotoObj}...], [ [{roomObj}, [{photoObj}...]... ]  ]
     // [{listingObj: {listingObj}, listingPhotoObjList: [{listingPhotoObj}...], listingRoomObjList: [{roomObj}...]
-
     const listing = req.body.listingObj;
     const listingPhotos = req.body.listingPhotoObjList;
     const listingRoomsAndRoomPhotosObjList =
       req.body.listingRoomsAndRoomPhotosObjList;
 
+    //TO DO: validate Listing Photos, Rooms and Room Photos
     const { error, value } = listingSchema.validate(listing);
 
     const newListing = new Listing({
@@ -129,7 +103,6 @@ const createAListing = async (req, res, next) => {
       street_address: listing.street_address,
       city: listing.city,
       country: listing.country,
-
       building_type: listing.building_type,
       bills_included: listing.bills_included,
       internet_included: listing.internet_included,
@@ -139,29 +112,24 @@ const createAListing = async (req, res, next) => {
       has_living_room: listing.has_living_room,
       has_garden: listing.has_garden,
       has_parking: listing.has_parking,
-
       min_age: listing.min_age,
       max_age: listing.max_age,
       gender_preference: listing.gender_preference,
       couples_allowed: listing.couples_allowed,
       smokers_allowed: listing.smokers_allowed,
       pets_allowed: listing.pets_allowed,
-
       title: listing.title,
       description: listing.description,
-
       is_expired: listing.is_expired,
       expiry_date: listing.expiry_date,
       listing_create_date: new Date(),
       listing_update_date: new Date(),
     });
 
-    //Return the inserted listing
     const listingInsertData = await Listing.createAListing(newListing);
     const insertedListing = listingInsertData.insertedListing;
     const listingInsertId = listingInsertData.listingRows.insertId;
 
-    //Insert the listing photos, using the returned insert id of the listing
     const IdsOfListingPhotosInserted =
       await ListingPhoto.createPhotosForAListing(
         listingInsertId,
@@ -169,7 +137,6 @@ const createAListing = async (req, res, next) => {
       );
 
     //[ {roomObj: {roomObj}, IdsOfRoomsInserted: [1,2,3..]}... ]
-
     const roomDataObjInsertedList = [];
     //For each  obj in the list:  [ {roomObj: {roomObj}, roomObjPhotoList: [{roomPhotoObj}...] }...]
     for (const roomDataObj of listingRoomsAndRoomPhotosObjList) {
@@ -201,7 +168,6 @@ const createAListing = async (req, res, next) => {
       },
       roomDataObjInsertedList: roomDataObjInsertedList,
     };
-
     res.status(200).json(dataInserted);
   } catch (err) {
     return next(err);
@@ -210,7 +176,6 @@ const createAListing = async (req, res, next) => {
 
 const putAListingById = (req, res, next) => {
   try {
-    //Joi validation on req body
     const { error, value } = listingSchema.validate(req.body);
 
     if (error) {
@@ -219,13 +184,11 @@ const putAListingById = (req, res, next) => {
 
     const result = Listing.updateAListingById(req.params.id, req.body);
 
-    //if no rows were affected, the listing does not exist
     if (result.affectedRows === 0) {
       res.status(400).json(`Listing with id ${req.params.id} does not exist`);
       return;
     }
 
-    //return the updated listing
     res.status(200).json(req.body);
   } catch (err) {
     next(err);
@@ -247,10 +210,36 @@ const deleteAListingById = async (req, res, next) => {
   }
 };
 
+//ROOMS
+const getARoomsDetailsById = async (req, res, next) => {
+  try {
+    const roomId = req.params.id;
+    const roomRows = await Room.getARoomById(roomId);
+
+    if (roomRows.length === 0) {
+      res.status(400).json(`Room with id ${roomId} does not exist`);
+      return;
+    }
+
+    const roomPhotoRows = await RoomPhoto.getOrderedPhotosForARoom(roomId);
+
+    const roomDataObj = {
+      roomObj: roomRows,
+      roomPhotoObjList: roomPhotoRows,
+    };
+
+    res.status(200).json(roomDataObj);
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   getAllListings,
   getAListingById,
   createAListing,
   putAListingById,
   deleteAListingById,
+  //
+  getARoomsDetailsById,
 };
