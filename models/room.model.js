@@ -11,7 +11,7 @@ const Room = function (room) {
 
   this.room_size = room.room_size;
   this.floor = room.floor;
-  this.is_furnished = room.is_furnished;
+  this.room_is_furnished = room.room_is_furnished;
   this.is_en_suite = room.is_en_suite;
   this.is_desk = room.is_desk;
   this.is_boiler = room.is_boiler;
@@ -43,7 +43,7 @@ Room.getRoomsForAListing = async (id) => {
 Room.getRoomsCardDetailsForAListing = async (id) => {
   try {
     const roomQueryResult = await pool.query(
-      "SELECT room_id, rent, deposit, is_furnished, room_size, start_date FROM room WHERE listing_listing_id = ?",
+      "SELECT room_id, rent, deposit, is_en_suite, room_is_furnished, room_size, start_date FROM room WHERE listing_listing_id = ?",
       [id]
     );
 
@@ -230,7 +230,8 @@ Room.getRoomsCardInfoForAListing = async (id) => {
       room_id: room.room_id,
       rent: room.rent,
       deposit: room.deposit,
-      is_furnished: room.is_furnished,
+      is_en_suite: room.is_en_suite,
+      room_is_furnished: room.room_is_furnished,
       room_size: room.room_size,
       start_date: room.start_date,
     }));

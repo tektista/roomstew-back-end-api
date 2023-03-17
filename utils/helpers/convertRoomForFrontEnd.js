@@ -3,8 +3,8 @@ const convertRoomForFrontEnd = (room) => {
 
   if (newRoom.hasOwnProperty("is_furnished")) {
     newRoom.is_furnished == 1
-      ? (newRoom.is_furnished = "Yes")
-      : (newRoom.is_furnished = "No");
+      ? (newRoom.room_is_furnished = "Yes")
+      : (newRoom.room_is_furnished = "No");
   }
 
   if (newRoom.hasOwnProperty("room_size")) {

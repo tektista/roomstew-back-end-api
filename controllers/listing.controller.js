@@ -97,6 +97,8 @@ const getAListingById = async (req, res, next) => {
       listingRoomCardDetailsList: listingRoomCardDetailsRows,
     };
 
+    console.log(listingDataObj);
+
     res.status(200).json(listingDataObj);
   } catch (err) {
     return next(err);
@@ -119,8 +121,6 @@ const createAListing = async (req, res, next) => {
     const listingPhotos = req.body.listingPhotoObjList;
     const listingRoomsAndRoomPhotosObjList =
       req.body.listingRoomsAndRoomPhotosObjList;
-
-    console.log(listingRoomsAndRoomPhotosObjList);
 
     const { error, value } = listingSchema.validate(listing);
 
@@ -171,8 +171,6 @@ const createAListing = async (req, res, next) => {
     //[ {roomObj: {roomObj}, IdsOfRoomsInserted: [1,2,3..]}... ]
 
     const roomDataObjInsertedList = [];
-
-    console.log(listingRoomsAndRoomPhotosObjList.roomPhotoObjList);
     //For each  obj in the list:  [ {roomObj: {roomObj}, roomObjPhotoList: [{roomPhotoObj}...] }...]
     for (const roomDataObj of listingRoomsAndRoomPhotosObjList) {
       //Set the listing id of the room to the insert id of the listing
