@@ -10,11 +10,11 @@ const Room = function (room) {
   this.end_date = room.end_date;
 
   this.room_size = room.room_size;
-  this.floor = room.floor;
   this.room_is_furnished = room.room_is_furnished;
   this.is_en_suite = room.is_en_suite;
   this.is_desk = room.is_desk;
   this.is_boiler = room.is_boiler;
+  this.floor = room.floor;
 
   this.room_create_date = room.room_create_date;
   this.room_update_date = room.room_update_date;
@@ -24,6 +24,20 @@ const Room = function (room) {
 /* all functions in this require a listing_id which is provided by 
 the listing model
 */
+
+Room.getARoomById = async (id) => {
+  try {
+    const roomQueryResult = await pool.query(
+      "SELECT * FROM room WHERE room_id = ?",
+      [id]
+    );
+
+    const roomRows = roomQueryResult[0];
+    return roomRows;
+  } catch (err) {
+    throw err;
+  }
+};
 
 //validate inside here
 Room.getRoomsForAListing = async (id) => {

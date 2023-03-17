@@ -25,6 +25,19 @@ RoomPhoto.getPhotosForARoom = async (id) => {
   }
 };
 
+RoomPhoto.getOrderedPhotosForARoom = async (id) => {
+  try {
+    const roomPhotoQueryResult = await pool.query(
+      "SELECT room_photo FROM room_photo WHERE room_room_id = ? ORDER BY room_photo_order ASC",
+      [id]
+    );
+    const roomPhotoRows = roomPhotoQueryResult[0];
+    return roomPhotoRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
 //create one room photo
 RoomPhoto.createAPhotoForARoom = async (newRoomPhoto) => {
   try {
