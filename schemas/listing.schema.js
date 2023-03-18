@@ -4,7 +4,7 @@ const listingSchema = Joi.object({
   postcode: Joi.string().min(1).max(10).required(),
   street_address: Joi.string().min(10).max(255).required(),
   city: Joi.string().min(1).max(50).required(),
-  country: Joi.string().min(1).max(50).required(),
+  // country: Joi.string().min(1).max(50).required(),
 
   building_type: Joi.number().integer().min(0).max(2).required(),
   bills_included: Joi.boolean().required(),

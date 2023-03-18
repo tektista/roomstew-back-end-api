@@ -8,7 +8,7 @@ const Listing = function (listing) {
   this.postcode = listing.postcode;
   this.street_address = listing.street_address;
   this.city = listing.city;
-  this.country = listing.country;
+  // this.country = listing.country;
 
   this.building_type = listing.building_type;
   this.bills_included = listing.bills_included;
@@ -147,12 +147,12 @@ Listing.createAListingOld = async (
 Listing.updateAListingById = async (id, listing) => {
   try {
     const result = await pool.query(
-      "UPDATE listing SET postcode = ?, street_address = ?, city = ?, country = ?, building_type = ?, bills_included = ?, internet_included = ?, is_furnished = ?, bathroom_count = ?, has_hmo = ?, has_living_room = ?, has_garden = ?, has_parking = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ?, title = ?, description = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ? WHERE listing_id = ?",
+      "UPDATE listing SET postcode = ?, street_address = ?, city = ?,  building_type = ?, bills_included = ?, internet_included = ?, is_furnished = ?, bathroom_count = ?, has_hmo = ?, has_living_room = ?, has_garden = ?, has_parking = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ?, title = ?, description = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ? WHERE listing_id = ?",
       [
         listing.postcode,
         listing.street_address,
         listing.city,
-        listing.country,
+        // listing.country,
 
         listing.building_type,
         listing.bills_included,

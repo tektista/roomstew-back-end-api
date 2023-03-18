@@ -102,7 +102,7 @@ const createAListing = async (req, res, next) => {
       postcode: listing.postcode,
       street_address: listing.street_address,
       city: listing.city,
-      country: listing.country,
+      // country: listing.country,
       building_type: listing.building_type,
       bills_included: listing.bills_included,
       internet_included: listing.internet_included,
