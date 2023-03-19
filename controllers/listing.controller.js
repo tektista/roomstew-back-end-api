@@ -5,6 +5,7 @@ const Listing = require("../models/listing.model");
 const ListingPhoto = require("../models/listing_photo.model");
 const Room = require("../models/room.model");
 const RoomPhoto = require("../models/room_photo.model");
+const SavedListing = require("../models/saved_listing.model");
 
 const { listingSchema } = require("../schemas/listing.schema");
 
@@ -54,11 +55,15 @@ const getAllListings = async (req, res, next) => {
         minRoomRent: minRoomRent,
         earliestRoomDateAvailable: minRoomStartDate,
         dateAdded: listing.listing_create_date,
+        // saved: listingIdsSavedByUser.includes(listing.listing_id)
+        //   ? true
+        //   : false,
       };
 
       const convertedListingCard = convertListingCardForFrontEnd(listingCard);
       cardList.push(convertedListingCard);
     }
+
     res.status(200).json(cardList);
   } catch (err) {
     return next(err);
@@ -75,12 +80,20 @@ const getAListingById = async (req, res, next) => {
     const listingRoomCardDetailsRows =
       await Room.getRoomsCardDetailsForAListing(listingId);
 
+    // Hardcoded User
+    const savedQueryRows = await SavedListing.getSavedListingIdsByUserId();
+    // const listingIdsSavedByUser = savedQueryRows.map(
+    //   (savedId) => savedId.listing_listing_id
+    // );
+
     const listingDataObj = {
       listingObj: listingRows,
       listingPhotoObjList: listingPhotoRows,
       listingRoomCardDetailsList: listingRoomCardDetailsRows,
+      savedQueryRows: savedQueryRows,
     };
 
+    console.log(listingDataObj);
     res.status(200).json(listingDataObj);
   } catch (err) {
     return next(err);
@@ -88,7 +101,6 @@ const getAListingById = async (req, res, next) => {
 };
 
 const getAllListingsByUserId = async (req, res, next) => {
-  console.log("Hi");
   try {
     const cardList = [];
     const listingRows = await Listing.getAllListingsByUserId(req);
