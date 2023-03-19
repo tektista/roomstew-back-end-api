@@ -1,28 +1,29 @@
-//Description: Instead of defining functionalities inside routes, we define them in a separate controller file,
-//so routes are easily readable
-const listing = require("../controllers/listing.controller.js");
+// Description: Instead of defining functionalities inside routes, we define them in a separate controller file,
+// so routes are easily readable
+const listingController = require("../controllers/listing.controller.js");
 
-//express router used to shorten route path to base
+// Express router used to shorten route path to base
 const listingsRouter = require("express").Router();
 
-//route to get all listings - call listing.findAll function from controller
-//use this to retrieve all listings and gather info from rooms
-listingsRouter.get("/", listing.getAllListings);
+// Route to get all listings - call listing.findAll function from controller
+listingsRouter.get("/", listingController.getAllListings);
 
 // Route to get all listings for a user
-listingsRouter.get("/user", listing.getAllListingsByUserId);
+listingsRouter.get("/user", listingController.getAllListingsByUserId);
 
-// //route to get a specific listing
-listingsRouter.get("/:id", listing.getAListingById);
+// Route to get all listings by a user's saved listings
+listingsRouter.get("/save", listingController.getAllListingsByListingIds);
 
-//route to create a listing
-listingsRouter.post("/", listing.createAListing);
+// Route to get a specific listing
+listingsRouter.get("/:id", listingController.getAListingById);
 
-//route to update a listing
-listingsRouter.put("/:id", listing.putAListingById);
+// Route to create a listing
+listingsRouter.post("/", listingController.createAListing);
 
-//route to delete a listing
-listingsRouter.delete("/:id", listing.deleteAListingById);
-//
+// Route to update a listing
+listingsRouter.put("/:id", listingController.putAListingById);
+
+// Route to delete a listing
+listingsRouter.delete("/:id", listingController.deleteAListingById);
 
 module.exports = listingsRouter;

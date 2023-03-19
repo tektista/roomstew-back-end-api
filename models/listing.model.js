@@ -56,6 +56,23 @@ Listing.getAllListings = async (req) => {
   }
 };
 
+Listing.getAllListingsByListingIds = async (listingIds, req) => {
+  const limit = 1;
+  const offset = req.query.offset;
+  try {
+    const listingRowList = [];
+    for (let i = offset; i < offset + limit; i++) {
+      if (i >= listingIds.length) break;
+      const listingId = listingIds[i];
+      const listingRow = await Listing.getAListingById(listingId);
+      listingRowList.push(listingRow[0]);
+    }
+    return listingRowList;
+  } catch (err) {
+    throw err;
+  }
+};
+
 //function for retrieving information needed for a cards details
 Listing.getAListingById = async (id) => {
   try {
@@ -119,46 +136,6 @@ Listing.createAListing = async (newListing) => {
     ]);
     const listingRows = listingQueryResult[0];
     return { listingRows: listingRows, insertedListing: newListing };
-  } catch (err) {
-    throw err;
-  }
-};
-
-Listing.createAListingOld = async (
-  newListing,
-  listingPhotos,
-  listingRoomsWithRoomPhotos
-) => {
-  try {
-    //Insert the new listing
-    const listingQueryResult = await pool.query("INSERT INTO listing SET ?", [
-      newListing,
-    ]);
-    const listingRows = listingQueryResult[0];
-
-    //Get the Insert ID of the listing insert
-    const listingInsertId = listingRows.insertId;
-
-    //Insert the listing photos, using the insert ID of the listing insert
-    const IdsOfListingPhotosInserted =
-      await ListingPhoto.createPhotosForAListing(
-        listingInsertId,
-        listingPhotos
-      );
-
-    const roomsInsertedAndIdsOfRoomPhotosInserted =
-      await Room.createRoomsForAListing(
-        listingInsertId,
-        listingRoomsWithRoomPhotos
-      );
-
-    return {
-      listing: listingRows,
-      IdsOflistingPhotosInserted: IdsOfListingPhotosInserted,
-      roomsInserted: roomsInsertedAndIdsOfRoomPhotosInserted.roomRowList,
-      IdsOfRoomPhotosInserted:
-        roomsInsertedAndIdsOfRoomPhotosInserted.IdsOfRoomPhotosInserted,
-    };
   } catch (err) {
     throw err;
   }
