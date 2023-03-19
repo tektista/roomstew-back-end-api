@@ -9,6 +9,9 @@ const listingsRouter = require("express").Router();
 //use this to retrieve all listings and gather info from rooms
 listingsRouter.get("/", listing.getAllListings);
 
+// Route to get all listings for a user
+listingsRouter.get("/user", listing.getAllListingsByUserId);
+
 // //route to get a specific listing
 listingsRouter.get("/:id", listing.getAListingById);
 
@@ -20,5 +23,7 @@ listingsRouter.put("/:id", listing.putAListingById);
 
 //route to delete a listing
 listingsRouter.delete("/:id", listing.deleteAListingById);
+
+//
 
 module.exports = listingsRouter;

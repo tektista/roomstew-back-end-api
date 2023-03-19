@@ -38,9 +38,12 @@ const Listing = function (listing) {
 
 //Function for retrieving information required for a card listing
 Listing.getAllListings = async (req) => {
+  //HARDCODE A USER for not displaying their own listings
+  const USER_ID = 1;
+
   const limit = 1;
   const offset = req.query.offset;
-  let listingQuery = `SELECT * FROM listing LIMIT ${limit} OFFSET ${offset}`;
+  let listingQuery = `SELECT * FROM listing WHERE user_user_id != ${USER_ID} LIMIT ${limit} OFFSET ${offset}`;
 
   try {
     const listingQueryResult = await pool.query(listingQuery);
@@ -60,6 +63,23 @@ Listing.getAListingById = async (id) => {
       `SELECT * FROM listing WHERE listing_id = ?`,
       [id]
     );
+    const listingRows = listingQueryResult[0];
+    return listingRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
+Listing.getAllListingsByUserId = async (req) => {
+  //HARDCODE A USER for getting their own listings
+  const USER_ID = 1;
+  const limit = 100;
+  const offset = req.query.offset;
+  let listingQuery = `SELECT * FROM listing WHERE user_user_id = ${USER_ID} LIMIT ${limit} OFFSET ${offset}`;
+
+  try {
+    const listingQueryResult = await pool.query(listingQuery);
+
     const listingRows = listingQueryResult[0];
     return listingRows;
   } catch (err) {

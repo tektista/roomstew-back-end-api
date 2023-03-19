@@ -87,6 +87,62 @@ const getAListingById = async (req, res, next) => {
   }
 };
 
+const getAllListingsByUserId = async (req, res, next) => {
+  console.log("Hi");
+  try {
+    const cardList = [];
+    const listingRows = await Listing.getAllListingsByUserId(req);
+
+    for (const listing of listingRows) {
+      const listingPhotoRows = await ListingPhoto.getThumbnailForAListing(
+        listing.listing_id
+      );
+
+      const listingPhotoRowsWithOnlyBlobData = listingPhotoRows.map(
+        ({ listing_photo }) => {
+          return { listing_photo };
+        }
+      );
+
+      const roomCountQueryResult = await Room.getRoomCountForAListing(
+        listing.listing_id
+      );
+
+      const roomCount = roomCountQueryResult[0][0].count;
+
+      const minRoomRentForAListingQueryResult =
+        await Room.getMinRoomRentForAListing(listing.listing_id);
+      const minRoomRent = minRoomRentForAListingQueryResult[0][0].min_rent;
+
+      const minRoomStartDateForAListingQueryResult =
+        await Room.getMinRoomStartDateForAListing(listing.listing_id);
+      const minRoomStartDate =
+        minRoomStartDateForAListingQueryResult[0][0].min_start_date;
+
+      const listingCard = {
+        id: listing.listing_id,
+        title: listing.title,
+        listingPhoto: listingPhotoRowsWithOnlyBlobData,
+        streetAddress: listing.street_address,
+        city: listing.city,
+        postcode: listing.postcode,
+        dateAdded: listing.listing_create_date,
+        numRoomsAvailable: roomCount,
+        minRoomRent: minRoomRent,
+        earliestRoomDateAvailable: minRoomStartDate,
+        dateAdded: listing.listing_create_date,
+      };
+
+      const convertedListingCard = convertListingCardForFrontEnd(listingCard);
+      cardList.push(convertedListingCard);
+    }
+
+    res.status(200).json(cardList);
+  } catch (err) {
+    throw err;
+  }
+};
+
 const createAListing = async (req, res, next) => {
   try {
     // [{listingObj: {listingObj}, listingPhotoObjList: [{listingPhotoObj}...], listingRoomObjList: [{roomObj}...]
@@ -240,6 +296,9 @@ module.exports = {
   createAListing,
   putAListingById,
   deleteAListingById,
+
+  //
+  getAllListingsByUserId,
   //
   getARoomsDetailsById,
 };
