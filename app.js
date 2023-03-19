@@ -25,6 +25,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser"); // require body-parser middleware
 const listingsRouter = require("./routes/listing.routes");
 const roomsRouter = require("./routes/room.routes");
+const saveRouter = require("./routes/save.routes");
 
 const errorHandler = require("./utils/errorHandler");
 
@@ -38,6 +39,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/listings", listingsRouter);
 app.use("/api/rooms", roomsRouter);
+app.use("/api/save", saveRouter);
 
 app.use(errorHandler);
 

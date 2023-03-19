@@ -23,7 +23,6 @@ listingsRouter.put("/:id", listing.putAListingById);
 
 //route to delete a listing
 listingsRouter.delete("/:id", listing.deleteAListingById);
-
 //
 
 module.exports = listingsRouter;

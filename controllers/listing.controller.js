@@ -5,7 +5,7 @@ const Listing = require("../models/listing.model");
 const ListingPhoto = require("../models/listing_photo.model");
 const Room = require("../models/room.model");
 const RoomPhoto = require("../models/room_photo.model");
-const SavedListing = require("../models/saved_listing.model");
+const SaveListing = require("../models/save_listing.model");
 
 const { listingSchema } = require("../schemas/listing.schema");
 
@@ -81,7 +81,7 @@ const getAListingById = async (req, res, next) => {
       await Room.getRoomsCardDetailsForAListing(listingId);
 
     // Hardcoded User
-    const savedQueryRows = await SavedListing.getSavedListingIdsByUserId();
+    // const savedQueryRows = await SaveListing.getSavedListingIdsByUserId();
     // const listingIdsSavedByUser = savedQueryRows.map(
     //   (savedId) => savedId.listing_listing_id
     // );
@@ -90,10 +90,9 @@ const getAListingById = async (req, res, next) => {
       listingObj: listingRows,
       listingPhotoObjList: listingPhotoRows,
       listingRoomCardDetailsList: listingRoomCardDetailsRows,
-      savedQueryRows: savedQueryRows,
+      // savedQueryRows: savedQueryRows,
     };
 
-    console.log(listingDataObj);
     res.status(200).json(listingDataObj);
   } catch (err) {
     return next(err);
@@ -302,6 +301,38 @@ const getARoomsDetailsById = async (req, res, next) => {
   }
 };
 
+const getSavedListingIdsByUserId = async (req, res, next) => {
+  try {
+    const savedQueryResult = await SaveListing.getSavedListingIdsByUserId(req);
+    console.log(savedQueryResult);
+    res.status(200).json(savedQueryResult);
+  } catch (err) {
+    throw err;
+  }
+};
+
+//SAVE LISTINGS
+const saveAListingForAUser = async (req, res, next) => {
+  try {
+    const savedQueryResult = await SaveListing.saveAListingByListingAndUserId(
+      req
+    );
+    res.status(200).json(savedQueryResult);
+  } catch (err) {
+    throw err;
+  }
+};
+
+const deleteAListingForAUser = async (req, res, next) => {
+  try {
+    const savedQueryResult =
+      await SaveListing.deleteASavedListingByListingAndUserId(req);
+    res.status(200).json(savedQueryResult);
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   getAllListings,
   getAListingById,
@@ -313,4 +344,8 @@ module.exports = {
   getAllListingsByUserId,
   //
   getARoomsDetailsById,
+  //
+  getSavedListingIdsByUserId,
+  saveAListingForAUser,
+  deleteAListingForAUser,
 };
