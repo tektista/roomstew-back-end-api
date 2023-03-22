@@ -12,6 +12,7 @@ const { listingSchema } = require("../schemas/listing.schema");
 //req is from the request when the route is called, res is the response
 //we send back to the client calling the route
 
+//LISTINGS TABLE
 const getAllListings = async (req, res, next) => {
   try {
     const cardList = [];
@@ -70,35 +71,78 @@ const getAllListings = async (req, res, next) => {
   }
 };
 
-const getAListingById = async (req, res, next) => {
+//Get all saved listings given a user id
+const getAllListingsByListingIds = async (req, res, next) => {
   try {
-    //{listingObj: [{listingObj}], listingPhotoObjList: [{listingPhoto}...], listingRoomIdList: [1,2,3] }
-    const listingId = req.params.id;
-    const listingRows = await Listing.getAListingById(listingId);
-    const listingPhotoRows = await ListingPhoto.getPhotosForAListing(listingId);
+    //hardcoded user id
+    const saveQueryRows = await SaveListing.getSavedListingIdsByUserId();
 
-    const listingRoomCardDetailsRows =
-      await Room.getRoomsCardDetailsForAListing(listingId);
+    const listingIdsSavedByUser = saveQueryRows.map((row) => {
+      return row.listing_listing_id;
+    });
 
-    // Hardcoded User
-    // const savedQueryRows = await SaveListing.getSavedListingIdsByUserId();
-    // const listingIdsSavedByUser = savedQueryRows.map(
-    //   (savedId) => savedId.listing_listing_id
-    // );
+    //pass offset/query
+    const listingRows = await Listing.getAllListingsByListingIds(
+      listingIdsSavedByUser,
+      req
+    );
 
-    const listingDataObj = {
-      listingObj: listingRows,
-      listingPhotoObjList: listingPhotoRows,
-      listingRoomCardDetailsList: listingRoomCardDetailsRows,
-      // savedQueryRows: savedQueryRows,
-    };
+    const cardList = [];
+    for (const listing of listingRows) {
+      const listingPhotoRows = await ListingPhoto.getThumbnailForAListing(
+        listing.listing_id
+      );
 
-    res.status(200).json(listingDataObj);
+      const listingPhotoRowsWithOnlyBlobData = listingPhotoRows.map(
+        ({ listing_photo }) => {
+          return { listing_photo };
+        }
+      );
+
+      const roomCountQueryResult = await Room.getRoomCountForAListing(
+        listing.listing_id
+      );
+
+      const roomCount = roomCountQueryResult[0][0].count;
+
+      const minRoomRentForAListingQueryResult =
+        await Room.getMinRoomRentForAListing(listing.listing_id);
+      const minRoomRent = minRoomRentForAListingQueryResult[0][0].min_rent;
+
+      const minRoomStartDateForAListingQueryResult =
+        await Room.getMinRoomStartDateForAListing(listing.listing_id);
+      const minRoomStartDate =
+        minRoomStartDateForAListingQueryResult[0][0].min_start_date;
+
+      const listingCard = {
+        id: listing.listing_id,
+        title: listing.title,
+        listingPhoto: listingPhotoRowsWithOnlyBlobData,
+        streetAddress: listing.street_address,
+        city: listing.city,
+        postcode: listing.postcode,
+        dateAdded: listing.listing_create_date,
+        numRoomsAvailable: roomCount,
+        minRoomRent: minRoomRent,
+        earliestRoomDateAvailable: minRoomStartDate,
+        dateAdded: listing.listing_create_date,
+        // saved: listingIdsSavedByUser.includes(listing.listing_id)
+        //   ? true
+        //   : false,
+      };
+
+      const convertedListingCard = convertListingCardForFrontEnd(listingCard);
+
+      cardList.push(convertedListingCard);
+    }
+
+    res.status(200).json(cardList);
   } catch (err) {
-    return next(err);
+    throw err;
   }
 };
 
+//get all the listings the user has posetd given a user id
 const getAllListingsByUserId = async (req, res, next) => {
   try {
     const cardList = [];
@@ -151,6 +195,28 @@ const getAllListingsByUserId = async (req, res, next) => {
     res.status(200).json(cardList);
   } catch (err) {
     throw err;
+  }
+};
+
+const getAListingById = async (req, res, next) => {
+  try {
+    //{listingObj: [{listingObj}], listingPhotoObjList: [{listingPhoto}...], listingRoomIdList: [1,2,3] }
+    const listingId = req.params.id;
+    const listingRows = await Listing.getAListingById(listingId);
+    const listingPhotoRows = await ListingPhoto.getPhotosForAListing(listingId);
+
+    const listingRoomCardDetailsRows =
+      await Room.getRoomsCardDetailsForAListing(listingId);
+
+    const listingDataObj = {
+      listingObj: listingRows,
+      listingPhotoObjList: listingPhotoRows,
+      listingRoomCardDetailsList: listingRoomCardDetailsRows,
+    };
+
+    res.status(200).json(listingDataObj);
+  } catch (err) {
+    return next(err);
   }
 };
 
@@ -277,7 +343,7 @@ const deleteAListingById = async (req, res, next) => {
   }
 };
 
-//ROOMS
+//ROOMS TABLE
 const getARoomsDetailsById = async (req, res, next) => {
   try {
     const roomId = req.params.id;
@@ -301,23 +367,26 @@ const getARoomsDetailsById = async (req, res, next) => {
   }
 };
 
+//SAVED TABLE
+
+// return all rows where
+
 const getSavedListingIdsByUserId = async (req, res, next) => {
   try {
-    const savedQueryResult = await SaveListing.getSavedListingIdsByUserId(req);
-    console.log(savedQueryResult);
-    res.status(200).json(savedQueryResult);
+    const saveQueryResult = await SaveListing.getSavedListingIdsByUserId(req);
+
+    res.status(200).json(saveQueryResult);
   } catch (err) {
     throw err;
   }
 };
 
-//SAVE LISTINGS
 const saveAListingForAUser = async (req, res, next) => {
   try {
-    const savedQueryResult = await SaveListing.saveAListingByListingAndUserId(
+    const saveQueryResult = await SaveListing.saveAListingByListingAndUserId(
       req
     );
-    res.status(200).json(savedQueryResult);
+    res.status(200).json(saveQueryResult);
   } catch (err) {
     throw err;
   }
@@ -325,9 +394,9 @@ const saveAListingForAUser = async (req, res, next) => {
 
 const deleteAListingForAUser = async (req, res, next) => {
   try {
-    const savedQueryResult =
+    const saveQueryResult =
       await SaveListing.deleteASavedListingByListingAndUserId(req);
-    res.status(200).json(savedQueryResult);
+    res.status(200).json(saveQueryResult);
   } catch (err) {
     throw err;
   }
@@ -335,6 +404,7 @@ const deleteAListingForAUser = async (req, res, next) => {
 
 module.exports = {
   getAllListings,
+  getAllListingsByListingIds,
   getAListingById,
   createAListing,
   putAListingById,
