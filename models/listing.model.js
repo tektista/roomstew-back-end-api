@@ -37,20 +37,70 @@ const Listing = function (listing) {
 };
 
 //Function for retrieving information required for a card listing
-Listing.getAllListings = async (req) => {
-  //HARDCODE A USER for not displaying their own listings
+Listing.getAllListings = async function getAllListings(req) {
   const USER_ID = 1;
-
   const limit = 1;
   const offset = req.query.offset;
-  let listingQuery = `SELECT * FROM listing WHERE user_user_id != ${USER_ID} LIMIT ${limit} OFFSET ${offset}`;
+  console.log(req.query.city);
+  const rawCity = req.query.city || "";
+  const rawMinRent = req.query.minRent || "";
+  const rawMaxRent = req.query.maxRent || "";
+  const rawMinRoomsAvailable = req.query.minRooms || "";
+
+  const city = rawCity.trim();
+  const minRent = rawMinRent !== "" ? rawMinRent : "";
+  const maxRent = rawMaxRent !== "" ? rawMaxRent : "";
+  const minRoomsAvailable =
+    rawMinRoomsAvailable !== "" ? rawMinRoomsAvailable : "";
+
+  let joinCondition = "";
+  let cityCondition = "";
+  let minRentCondition = "";
+  let maxRentCondition = "";
+  let minRoomsAvailableCondition = "";
+
+  if (minRent !== "" || maxRent !== "" || minRoomsAvailable !== "") {
+    joinCondition = "JOIN room ON room.listing_listing_id = listing.listing_id";
+  }
+
+  if (city) {
+    cityCondition = `AND city LIKE '%${city}%'`;
+  }
+
+  if (minRent !== "") {
+    minRentCondition = `AND room.rent >= ${minRent}`;
+  }
+
+  if (maxRent !== "") {
+    maxRentCondition = `AND room.rent <= ${maxRent}`;
+  }
+
+  if (minRoomsAvailable !== "") {
+    minRoomsAvailableCondition = `
+      HAVING COUNT(room.listing_listing_id) >= ${minRoomsAvailable}
+    `;
+  }
+
+  const listingQuery = `
+    SELECT DISTINCT listing.*
+    FROM listing
+    ${joinCondition}
+    WHERE user_user_id != ${USER_ID}
+    ${cityCondition}
+    ${minRentCondition}
+    ${maxRentCondition}
+    GROUP BY listing.listing_id
+    ${minRoomsAvailableCondition}
+    ORDER BY listing.listing_create_date DESC
+    LIMIT ${limit} OFFSET ${offset}
+  `;
+
+  console.log("Query start");
+  console.log(listingQuery);
 
   try {
     const listingQueryResult = await pool.query(listingQuery);
-
-    const listingRows = listingQueryResult[0];
-
-    return listingRows;
+    return listingQueryResult[0];
   } catch (err) {
     throw err;
   }
@@ -104,33 +154,8 @@ Listing.getAllListingsByUserId = async (req) => {
   }
 };
 
-//
-
-/*
-In the getAllListings controller we take in [{newListing}, {listingPhotos}, {listingRoomsWithRoomPhotos]
-
-
-1. CreateAlisting -
-- insert the listing, 
-- return the insertID, and the inserted listing
-
-2. CreatePhotosForAListing -
-- insert the photos using the insertId from create a listing
-- return the ids of the photos inserted
-
-3. CreateRoomsForA Listing
-- insert the rooms using the insertId from create a listing
-- return the ids of the rooms inserted 
-
-4. CreatePhotosForARoom
-Inserted the rooms using the insert id from create a room
-- return the ids of the photos inserted
-
-*/
-
 Listing.createAListing = async (newListing) => {
   try {
-    //Insert the new listing
     const listingQueryResult = await pool.query("INSERT INTO listing SET ?", [
       newListing,
     ]);
