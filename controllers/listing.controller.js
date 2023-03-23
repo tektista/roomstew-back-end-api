@@ -23,12 +23,6 @@ const getAllListings = async (req, res, next) => {
         listing.listing_id
       );
 
-      const listingPhotoRowsWithOnlyBlobData = listingPhotoRows.map(
-        ({ listing_photo }) => {
-          return { listing_photo };
-        }
-      );
-
       const roomCountQueryResult = await Room.getRoomCountForAListing(
         listing.listing_id
       );
@@ -45,24 +39,20 @@ const getAllListings = async (req, res, next) => {
         minRoomStartDateForAListingQueryResult[0][0].min_start_date;
 
       const listingCard = {
-        id: listing.listing_id,
+        listing_id: listing.listing_id,
         title: listing.title,
-        listingPhoto: listingPhotoRowsWithOnlyBlobData,
-        streetAddress: listing.street_address,
+        listingPhotoRows: listingPhotoRows,
+        street_address: listing.street_address,
         city: listing.city,
         postcode: listing.postcode,
-        dateAdded: listing.listing_create_date,
+        listing_create_date: listing.listing_create_date,
         numRoomsAvailable: roomCount,
         minRoomRent: minRoomRent,
         earliestRoomDateAvailable: minRoomStartDate,
-        dateAdded: listing.listing_create_date,
-        // saved: listingIdsSavedByUser.includes(listing.listing_id)
-        //   ? true
-        //   : false,
+        hasLivingRoom: listing.has_living_room,
+        bathroomCount: listing.bathroom_count,
       };
-
-      const convertedListingCard = convertListingCardForFrontEnd(listingCard);
-      cardList.push(convertedListingCard);
+      cardList.push(listingCard);
     }
 
     res.status(200).json(cardList);
