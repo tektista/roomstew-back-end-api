@@ -54,6 +54,20 @@ Room.getRoomsForAListing = async (id) => {
   }
 };
 
+Room.getRoomIdsForAListing = async (id) => {
+  try {
+    const roomQueryResult = await pool.query(
+      "SELECT room_id FROM room WHERE listing_listing_id = ?",
+      [id]
+    );
+
+    const roomRows = roomQueryResult[0];
+    return roomRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
 Room.getRoomsCardDetailsForAListing = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -256,6 +270,19 @@ Room.deleteARoomById = async (id) => {
   try {
     const roomQueryResult = await pool.query(
       "DELETE FROM room WHERE room_id = ?",
+      [id]
+    );
+
+    return roomQueryResult[0];
+  } catch (err) {
+    throw err;
+  }
+};
+
+Room.deleteRoomsByListingId = async (id) => {
+  try {
+    const roomQueryResult = await pool.query(
+      "DELETE FROM room WHERE listing_listing_id = ?",
       [id]
     );
 

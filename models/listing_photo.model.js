@@ -108,4 +108,17 @@ ListingPhoto.createPhotosForAListing = async (
   }
 };
 
+ListingPhoto.deleteListingPhotosByListingId = async (listingId) => {
+  try {
+    const listingPhotoQueryResult = await pool.query(
+      "DELETE FROM listing_photo WHERE listing_listing_id = ?",
+      [listingId]
+    );
+    const listingPhotoRows = listingPhotoQueryResult[0];
+    return listingPhotoRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = ListingPhoto;

@@ -25,6 +25,19 @@ RoomPhoto.getPhotosForARoom = async (id) => {
   }
 };
 
+RoomPhoto.getPhotoIdsForARoom = async (id) => {
+  try {
+    const roomPhotoQueryResult = await pool.query(
+      "SELECT room_photo_id FROM room_photo WHERE room_room_id = ?",
+      [id]
+    );
+    const roomPhotoRows = roomPhotoQueryResult[0];
+    return roomPhotoRows;
+  } catch (err) {
+    throw err;
+  }
+};
+
 RoomPhoto.getOrderedPhotosForARoom = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
@@ -81,6 +94,18 @@ RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
 };
 
 RoomPhoto.deleteAPhotoByRoomId = async (id) => {
+  try {
+    const roomPhotoQueryResult = await pool.query(
+      "DELETE FROM room_photo WHERE room_room_id = ?",
+      [id]
+    );
+    return roomPhotoQueryResult[0];
+  } catch (err) {
+    throw err;
+  }
+};
+
+RoomPhoto.deleteRoomPhotosByRoomId = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
       "DELETE FROM room_photo WHERE room_room_id = ?",

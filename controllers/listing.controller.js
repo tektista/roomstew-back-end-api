@@ -314,16 +314,49 @@ const putAListingById = (req, res, next) => {
   }
 };
 
+/* 
+
+get roomIds for a listing
+
+for each roomId, get the room_photos and delete them
+
+
+get the listing_photos and delete them
+
+delete the listing
+
+*/
+
 const deleteAListingById = async (req, res, next) => {
   try {
-    result = await Listing.removeAListingById(req.params.id);
+    const listingId = req.params.id;
 
-    if (result.affectedRows === 0) {
-      res.status(400).json(`Listing with id ${req.params.id} does not exist`);
-      return;
+    const roomRowsIds = await Room.getRoomIdsForAListing(req.params.id);
+
+    let roomPhotosAffected = 0;
+
+    for (const roomRowObj of roomRowsIds) {
+      //Delete all the room photos for a room
+      const roomPhotoRows = await RoomPhoto.deleteRoomPhotosByRoomId(
+        roomRowObj.room_id
+      );
+
+      roomPhotosAffected += roomPhotoRows.affectedRows;
     }
 
-    res.status(200).json(`Listing with id ${req.params.id} deleted`);
+    const roomRows = await Room.deleteRoomsByListingId(listingId);
+
+    //Delete all the listing photos for a listing
+    const listingPhotoRows = await ListingPhoto.deleteListingPhotosByListingId(
+      listingId
+    );
+
+    const listingQueryRows = await Listing.deleteAListingById(req.params.id);
+    res
+      .status(200)
+      .json(
+        `Listing with id ${listingId} deleted, ${listingPhotoRows.affectedRows} listing photos deleted, ${roomRows.affectedRows} rooms deleted, ${roomPhotosAffected} room photos deleted `
+      );
   } catch (err) {
     next(err);
   }
@@ -356,8 +389,8 @@ const getARoomsDetailsById = async (req, res, next) => {
 const deleteARoomById = async (req, res, next) => {
   const roomId = req.params.id;
 
-  const roomPhotoRows = await RoomPhoto.removeAPhotoByRoomId(roomId);
-  const roomRows = await Room.removeARoomById(roomId);
+  const roomPhotoRows = await RoomPhoto.deleteAPhotoByRoomId(roomId);
+  const roomRows = await Room.deleteARoomById(roomId);
 
   console.log("roomPhotoQueryResult");
   console.log(roomPhotoRows);

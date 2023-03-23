@@ -186,10 +186,13 @@ Listing.updateAListingById = async (id, listing) => {
   }
 };
 
-Listing.removeAListingById = async (id) => {
+Listing.deleteAListingById = async (id) => {
   try {
-    result = await pool.query("DELETE FROM listing WHERE listing_id = ?", [id]);
-    return result;
+    const listingQueryResult = await pool.query(
+      "DELETE FROM listing WHERE listing_id = ?",
+      [id]
+    );
+    return listingQueryResult[0];
   } catch (err) {
     throw err;
   }
