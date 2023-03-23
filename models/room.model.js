@@ -237,9 +237,7 @@ Room.getRoomsCardInfoForAListing = async (id) => {
       "SELECT * FROM room WHERE listing_listing_id = ?",
       [id]
     );
-
     const roomRows = roomQueryResult[0];
-
     const roomRowsCardDetails = roomRows.map((room) => ({
       room_id: room.room_id,
       rent: room.rent,
@@ -249,6 +247,19 @@ Room.getRoomsCardInfoForAListing = async (id) => {
       room_size: room.room_size,
       start_date: room.start_date,
     }));
+  } catch (err) {
+    throw err;
+  }
+};
+
+Room.removeARoomById = async (id) => {
+  try {
+    const roomQueryResult = await pool.query(
+      "DELETE FROM room WHERE room_id = ?",
+      [id]
+    );
+
+    return roomQueryResult[0];
   } catch (err) {
     throw err;
   }

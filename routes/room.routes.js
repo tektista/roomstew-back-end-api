@@ -8,4 +8,6 @@ const roomsRouter = require("express").Router();
 // //route to get a specific listing
 roomsRouter.get("/:id", listing.getARoomsDetailsById);
 
+roomsRouter.delete("/:id", listing.removeARoomById);
+
 module.exports = roomsRouter;

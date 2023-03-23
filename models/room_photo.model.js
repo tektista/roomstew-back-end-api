@@ -80,4 +80,16 @@ RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
   }
 };
 
+RoomPhoto.removeAPhotoByRoomId = async (id) => {
+  try {
+    const roomPhotoQueryResult = await pool.query(
+      "DELETE FROM room_photo WHERE room_room_id = ?",
+      [id]
+    );
+    return roomPhotoQueryResult[0];
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = RoomPhoto;

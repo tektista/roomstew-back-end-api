@@ -353,6 +353,29 @@ const getARoomsDetailsById = async (req, res, next) => {
   }
 };
 
+const removeARoomById = async (req, res, next) => {
+  const roomId = req.params.id;
+
+  const roomPhotoRows = await RoomPhoto.removeAPhotoByRoomId(roomId);
+  const roomRows = await Room.removeARoomById(roomId);
+
+  console.log("roomPhotoQueryResult");
+  console.log(roomPhotoRows);
+
+  console.log("roomQueryResult");
+  console.log(roomRows);
+
+  try {
+    res
+      .status(200)
+      .json(
+        `Delete room with id ${roomId}, Deleted ${roomRows.affectedRows} room row, Deleted ${roomPhotoRows.affectedRows} photos for this room`
+      );
+  } catch (err) {
+    console.log(err);
+    return next(err);
+  }
+};
 //SAVED TABLE
 
 // return all rows where
@@ -400,6 +423,7 @@ module.exports = {
   getAllListingsByUserId,
   //
   getARoomsDetailsById,
+  removeARoomById,
   //
   getSavedListingIdsByUserId,
   saveAListingForAUser,
