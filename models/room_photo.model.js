@@ -80,7 +80,7 @@ RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
   }
 };
 
-RoomPhoto.removeAPhotoByRoomId = async (id) => {
+RoomPhoto.deleteAPhotoByRoomId = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
       "DELETE FROM room_photo WHERE room_room_id = ?",

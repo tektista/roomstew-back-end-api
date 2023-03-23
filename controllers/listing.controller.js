@@ -353,7 +353,7 @@ const getARoomsDetailsById = async (req, res, next) => {
   }
 };
 
-const removeARoomById = async (req, res, next) => {
+const deleteARoomById = async (req, res, next) => {
   const roomId = req.params.id;
 
   const roomPhotoRows = await RoomPhoto.removeAPhotoByRoomId(roomId);
@@ -423,7 +423,7 @@ module.exports = {
   getAllListingsByUserId,
   //
   getARoomsDetailsById,
-  removeARoomById,
+  deleteARoomById,
   //
   getSavedListingIdsByUserId,
   saveAListingForAUser,

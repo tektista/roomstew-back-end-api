@@ -252,7 +252,7 @@ Room.getRoomsCardInfoForAListing = async (id) => {
   }
 };
 
-Room.removeARoomById = async (id) => {
+Room.deleteARoomById = async (id) => {
   try {
     const roomQueryResult = await pool.query(
       "DELETE FROM room WHERE room_id = ?",
