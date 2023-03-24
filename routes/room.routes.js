@@ -10,4 +10,6 @@ roomsRouter.get("/:id", listing.getARoomsDetailsById);
 
 roomsRouter.delete("/:id", listing.deleteARoomById);
 
+roomsRouter.put("/:id", listing.updateARoomById);
+
 module.exports = roomsRouter;

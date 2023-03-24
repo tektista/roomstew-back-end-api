@@ -444,6 +444,45 @@ const deleteAListingForAUser = async (req, res, next) => {
   }
 };
 
+const updateARoomById = async (req, res, next) => {
+  const roomObjWithRoomImageList = req.body;
+  const roomObj = roomObjWithRoomImageList.roomObj;
+  const roomPhotoObjList = roomObjWithRoomImageList.roomImageList;
+
+  console.log("Hello");
+  console.log(roomPhotoObjList);
+
+  //TO DO validate room
+  const newRoom = {
+    room_description: roomObj.room_description,
+    rent: roomObj.rent,
+    deposit: roomObj.deposit,
+    start_date: roomObj.start_date,
+    end_date: roomObj.end_date,
+    floor: roomObj.floor,
+    is_desk: roomObj.is_desk,
+    is_en_suite: roomObj.is_en_suite,
+    is_boiler: roomObj.is_boiler,
+    room_is_furnished: roomObj.room_is_furnished,
+  };
+  const roomQueryRows = await Room.updateARoomById(req.params.id, newRoom);
+
+  //delete all the phos for a room
+  const roomPhotoRows = await RoomPhoto.deleteRoomPhotosByRoomId(req.params.id);
+
+  //insert all the photos for a room
+  const roomPhotoInsertIdList = await RoomPhoto.createPhotosForARoom(
+    req.params.id,
+    roomPhotoObjList
+  );
+
+  res
+    .status(200)
+    .json(
+      `Room with id ${req.params.id} updated. ${roomPhotoRows.affectedRows} photos deleted, ${roomPhotoInsertIdList.length} photos inserted`
+    );
+};
+
 module.exports = {
   getAllListings,
   getAllListingsByListingIds,
@@ -457,6 +496,7 @@ module.exports = {
   //
   getARoomsDetailsById,
   deleteARoomById,
+  updateARoomById,
   //
   getSavedListingIdsByUserId,
   saveAListingForAUser,

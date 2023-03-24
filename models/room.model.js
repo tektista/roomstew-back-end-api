@@ -292,4 +292,17 @@ Room.deleteRoomsByListingId = async (id) => {
   }
 };
 
+Room.updateARoomById = async (id, room) => {
+  try {
+    const roomQueryResult = await pool.query(
+      "UPDATE room SET ? WHERE room_id = ?",
+      [room, id]
+    );
+
+    return roomQueryResult[0];
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = Room;
