@@ -21,7 +21,7 @@ listingsRouter.get("/:id", listingController.getAListingById);
 listingsRouter.post("/", listingController.createAListing);
 
 // Route to update a listing
-listingsRouter.put("/:id", listingController.putAListingById);
+listingsRouter.put("/:id", listingController.updateAListingById);
 
 // Route to delete a listing
 listingsRouter.delete("/:id", listingController.deleteAListingById);

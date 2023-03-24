@@ -293,26 +293,56 @@ const createAListing = async (req, res, next) => {
   }
 };
 
-const putAListingById = (req, res, next) => {
+const updateAListingById = async (req, res, next) => {
+  const listingId = req.params.id;
+  const updateObj = req.body;
+  const listingDetailsObj = updateObj.listingDetails;
+  const listingPhotoObjList = updateObj.listingPhotoObjList;
   try {
-    const { error, value } = listingSchema.validate(req.body);
+    const listingRows = await Listing.updateListingDetails(
+      listingId,
+      listingDetailsObj
+    );
 
-    if (error) {
-      throw error;
-    }
+    const listingPhotoRows = await ListingPhoto.deleteListingPhotosByListingId(
+      listingId
+    );
 
-    const result = Listing.updateAListingById(req.params.id, req.body);
+    const listingPhotoInsertIdList = await ListingPhoto.createPhotosForAListing(
+      listingId,
+      listingPhotoObjList
+    );
 
-    if (result.affectedRows === 0) {
-      res.status(400).json(`Listing with id ${req.params.id} does not exist`);
-      return;
-    }
-
-    res.status(200).json(req.body);
+    res
+      .status(200)
+      .json(
+        `Listing with id ${listingId} updated, ${listingPhotoRows.affectedRows} photos deleted, ${listingPhotoInsertIdList.length} photos inserted`
+      );
   } catch (err) {
-    next(err);
+    throw err;
   }
 };
+
+// const updateAListingById = (req, res, next) => {
+//   try {
+//     const { error, value } = listingSchema.validate(req.body);
+
+//     if (error) {
+//       throw error;
+//     }
+
+//     const result = Listing.updateAListingById(req.params.id, req.body);
+
+//     if (result.affectedRows === 0) {
+//       res.status(400).json(`Listing with id ${req.params.id} does not exist`);
+//       return;
+//     }
+
+//     res.status(200).json(req.body);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
 /* 
 
@@ -488,7 +518,7 @@ module.exports = {
   getAllListingsByListingIds,
   getAListingById,
   createAListing,
-  putAListingById,
+  updateAListingById,
   deleteAListingById,
 
   //

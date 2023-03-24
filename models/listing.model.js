@@ -166,50 +166,80 @@ Listing.createAListing = async (newListing) => {
   }
 };
 
-Listing.updateAListingById = async (id, listing) => {
+// min_age: 17,
+// max_age: 99,
+// gender_preference: 0,
+// couples_allowed: 0,
+// smokers_allowed: 0,
+// pets_allowed: 0
+Listing.updateListingDetails = async (listingId, listingDetailsObj) => {
+  const listing = listingDetailsObj;
+
   try {
-    const result = await pool.query(
-      "UPDATE listing SET postcode = ?, street_address = ?, city = ?,  building_type = ?, bills_included = ?, internet_included = ?, is_furnished = ?, bathroom_count = ?, has_hmo = ?, has_living_room = ?, has_garden = ?, has_parking = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ?, title = ?, description = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ? WHERE listing_id = ?",
+    const listingQueryResult = await pool.query(
+      "UPDATE listing SET title = ?, description= ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ? WHERE listing_id = ?",
       [
-        listing.postcode,
-        listing.street_address,
-        listing.city,
-        // listing.country,
-
-        listing.building_type,
-        listing.bills_included,
-        listing.internet_included,
-        listing.is_furnished,
-        listing.bathroom_count,
-        listing.has_hmo,
-        listing.has_living_room,
-        listing.has_garden,
-        listing.has_parking,
-
+        listing.title,
+        listing.description,
         listing.min_age,
         listing.max_age,
         listing.gender_preference,
         listing.couples_allowed,
         listing.smokers_allowed,
         listing.pets_allowed,
-
-        listing.title,
-        listing.description,
-
-        listing.is_expired,
-        listing.expiry_date,
-        listing_create_date,
-        listing_update_date,
-
-        id,
+        listingId,
       ]
     );
-    rows = result[0];
-    return result;
+    return listingQueryResult[0];
   } catch (err) {
     throw err;
   }
 };
+
+// Listing.updateAListingById = async (id, listing) => {
+//   try {
+//     const result = await pool.query(
+//       "UPDATE listing SET postcode = ?, street_address = ?, city = ?,  building_type = ?, bills_included = ?, internet_included = ?, is_furnished = ?, bathroom_count = ?, has_hmo = ?, has_living_room = ?, has_garden = ?, has_parking = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ?, title = ?, description = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ? WHERE listing_id = ?",
+//       [
+//         listing.postcode,
+//         listing.street_address,
+//         listing.city,
+//         // listing.country,
+
+//         listing.building_type,
+//         listing.bills_included,
+//         listing.internet_included,
+//         listing.is_furnished,
+//         listing.bathroom_count,
+//         listing.has_hmo,
+//         listing.has_living_room,
+//         listing.has_garden,
+//         listing.has_parking,
+
+//         listing.min_age,
+//         listing.max_age,
+//         listing.gender_preference,
+//         listing.couples_allowed,
+//         listing.smokers_allowed,
+//         listing.pets_allowed,
+
+//         listing.title,
+//         listing.description,
+
+//         listing.is_expired,
+//         listing.expiry_date,
+//         listing_create_date,
+//         listing_update_date,
+
+//         id,
+//       ]
+//     );
+//     rows = result[0];
+//     return result;
+//   } catch (err) {
+//     throw err;
+//   }
+// };
 
 Listing.deleteAListingById = async (id) => {
   try {
