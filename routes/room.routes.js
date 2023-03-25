@@ -12,4 +12,6 @@ roomsRouter.delete("/:id", listing.deleteARoomById);
 
 roomsRouter.put("/:id", listing.updateARoomById);
 
+roomsRouter.post("/:id", listing.createARoomByListingId);
+
 module.exports = roomsRouter;
