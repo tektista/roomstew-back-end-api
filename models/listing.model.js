@@ -38,62 +38,151 @@ const Listing = function (listing) {
 
 //Function for retrieving information required for a card listing
 Listing.getAllListings = async function getAllListings(req) {
+  const filterObj = req.query;
+  const offset = req.query.offset;
   const USER_ID = 1;
   const limit = 1;
-  const offset = req.query.offset;
-  console.log(req.query.city);
-  const rawCity = req.query.city || "";
-  const rawMinRent = req.query.minRent || "";
-  const rawMaxRent = req.query.maxRent || "";
-  const rawMinRoomsAvailable = req.query.minRooms || "";
 
-  const city = rawCity.trim();
-  const minRent = rawMinRent !== "" ? rawMinRent : "";
-  const maxRent = rawMaxRent !== "" ? rawMaxRent : "";
-  const minRoomsAvailable =
-    rawMinRoomsAvailable !== "" ? rawMinRoomsAvailable : "";
-
+  //These will be set and added to query if they are truthy,
   let joinCondition = "";
   let cityCondition = "";
+  let postcodeCondition = "";
+
+  //room table conditions
+  let dateAvailableCondition = "";
   let minRentCondition = "";
   let maxRentCondition = "";
-  let minRoomsAvailableCondition = "";
+  let minRoomsCondition = "";
+  let maxDepositCondition = "";
+  let isRoomFurnishedCondition = "";
+  let isRoomEnsuiteCondition = "";
+  //listing table conditions
+  let isFurnishedCondition = "";
+  let hasLivingRoomCondition = "";
+  let bathroomCountCondition = "";
+  let hasHmoCondition = "";
+  let billsIncludedCondition = "";
+  let internetIncludedCondition = "";
+  let buildingTypeCondition = "";
+  let hasGardenCondition = "";
+  let hasParkingCondition = "";
 
-  if (minRent !== "" || maxRent !== "" || minRoomsAvailable !== "") {
+  // Only join in room if
+  if (
+    filterObj.dateAvailable ||
+    filterObj.minRent ||
+    filterObj.maxRent ||
+    filterObj.minRooms ||
+    filterObj.maxDeposit ||
+    filterObj.isRoomFurnished ||
+    filterObj.isRoomFurnished === undefined ||
+    filterObj.roomIsEnsuite ||
+    filterObj.roomIsEnsuite === undefined
+  ) {
     joinCondition = "JOIN room ON room.listing_listing_id = listing.listing_id";
   }
 
-  if (city) {
-    cityCondition = `AND city LIKE '%${city}%'`;
+  if (filterObj.city) {
+    cityCondition = `AND city LIKE '%${filterObj.city}%'`;
   }
 
-  if (minRent !== "") {
-    minRentCondition = `AND room.rent >= ${minRent}`;
+  if (filterObj.postcode) {
+    postcodeCondition = `AND postcode LIKE '%${filterObj.postcode}%'`;
   }
 
-  if (maxRent !== "") {
-    maxRentCondition = `AND room.rent <= ${maxRent}`;
+  if (filterObj.minRent) {
+    minRentCondition = `AND room.rent >= ${filterObj.minRent}`;
   }
 
-  if (minRoomsAvailable !== "") {
-    minRoomsAvailableCondition = `
-      HAVING COUNT(room.listing_listing_id) >= ${minRoomsAvailable}
+  if (filterObj.maxRent) {
+    maxRentCondition = `AND room.rent <= ${filterObj.maxRent}`;
+  }
+
+  if (filterObj.maxDeposit) {
+    maxDepositCondition = `AND room.deposit <= ${filterObj.maxDeposit}`;
+  }
+
+  if (filterObj.dateAvailable) {
+    dateAvailableCondition = `AND room.start_date <='${filterObj.dateAvailable}'`;
+  }
+
+  if (filterObj.minRooms) {
+    minRoomsCondition = `
+      HAVING COUNT(room.listing_listing_id) >= ${filterObj.minRooms}
     `;
   }
 
+  if (filterObj.isRoomFurnished !== undefined) {
+    isRoomFurnishedCondition = `AND room.room_is_furnished = ${filterObj.isRoomFurnished}`;
+  }
+
+  if (filterObj.isRoomEnsuite !== undefined) {
+    isRoomEnsuiteCondition = `AND room.is_en_suite = ${filterObj.isRoomEnsuite}`;
+  }
+
+  if (filterObj.isFurnished !== undefined) {
+    isFurnishedCondition = `AND listing.is_furnished = ${filterObj.isFurnished}`;
+  }
+
+  if (filterObj.hasLivingRoom !== undefined) {
+    hasLivingRoomCondition = `AND listing.has_living_room = ${filterObj.hasLivingRoom}`;
+  }
+
+  if (filterObj.bathroomCount !== undefined) {
+    bathroomCountCondition = `AND listing.bathroom_count = ${filterObj.bathroomCount}`;
+  }
+
+  if (filterObj.hasHmo !== undefined) {
+    hasHmoCondition = `AND listing.has_hmo = ${filterObj.hasHmo}`;
+  }
+
+  if (filterObj.billsIncluded !== undefined) {
+    billsIncludedCondition = `AND listing.bills_included = ${filterObj.billsIncluded}`;
+  }
+
+  if (filterObj.internetIncluded !== undefined) {
+    internetIncludedCondition = `AND listing.internet_included = ${filterObj.internetIncluded}`;
+  }
+
+  if (filterObj.buildingType) {
+    buildingTypeCondition = `AND listing.building_type = '${filterObj.buildingType}'`;
+  }
+
+  if (filterObj.hasGarden !== undefined) {
+    hasGardenCondition = `AND listing.has_garden = ${filterObj.hasGarden}`;
+  }
+
+  if (filterObj.hasParking !== undefined) {
+    hasParkingCondition = `AND listing.has_parking = ${filterObj.hasParking}`;
+  }
+
   const listingQuery = `
-    SELECT DISTINCT listing.*
-    FROM listing
-    ${joinCondition}
-    WHERE user_user_id != ${USER_ID}
-    ${cityCondition}
-    ${minRentCondition}
-    ${maxRentCondition}
-    GROUP BY listing.listing_id
-    ${minRoomsAvailableCondition}
-    ORDER BY listing.listing_create_date DESC
-    LIMIT ${limit} OFFSET ${offset}
-  `;
+  SELECT DISTINCT listing.*
+  FROM listing
+  ${joinCondition}
+  WHERE user_user_id != ${USER_ID}
+  ${cityCondition}
+  ${postcodeCondition}
+  ${minRentCondition}
+  ${maxRentCondition}
+  ${maxDepositCondition}
+  ${dateAvailableCondition}
+  ${isRoomFurnishedCondition}
+  ${isRoomEnsuiteCondition}
+  ${isFurnishedCondition}
+  ${hasLivingRoomCondition}
+  ${bathroomCountCondition}
+  ${hasHmoCondition}
+  ${billsIncludedCondition}
+  ${internetIncludedCondition}
+  ${buildingTypeCondition}
+  ${hasGardenCondition}
+  ${hasParkingCondition}
+  GROUP BY listing.listing_id
+  ${minRoomsCondition}
+  ORDER BY listing.listing_create_date DESC
+  LIMIT ${limit} OFFSET ${offset}
+`;
 
   console.log("Query start");
   console.log(listingQuery);
@@ -166,12 +255,6 @@ Listing.createAListing = async (newListing) => {
   }
 };
 
-// min_age: 17,
-// max_age: 99,
-// gender_preference: 0,
-// couples_allowed: 0,
-// smokers_allowed: 0,
-// pets_allowed: 0
 Listing.updateListingDetails = async (listingId, listingDetailsObj) => {
   const listing = listingDetailsObj;
 
@@ -195,51 +278,6 @@ Listing.updateListingDetails = async (listingId, listingDetailsObj) => {
     throw err;
   }
 };
-
-// Listing.updateAListingById = async (id, listing) => {
-//   try {
-//     const result = await pool.query(
-//       "UPDATE listing SET postcode = ?, street_address = ?, city = ?,  building_type = ?, bills_included = ?, internet_included = ?, is_furnished = ?, bathroom_count = ?, has_hmo = ?, has_living_room = ?, has_garden = ?, has_parking = ?, min_age = ?, max_age = ?, gender_preference = ?, couples_allowed = ?, smokers_allowed = ?, pets_allowed = ?, title = ?, description = ?, is_expired = ?, expiry_date = ?, listing_create_date = ?, listing_update_date = ? WHERE listing_id = ?",
-//       [
-//         listing.postcode,
-//         listing.street_address,
-//         listing.city,
-//         // listing.country,
-
-//         listing.building_type,
-//         listing.bills_included,
-//         listing.internet_included,
-//         listing.is_furnished,
-//         listing.bathroom_count,
-//         listing.has_hmo,
-//         listing.has_living_room,
-//         listing.has_garden,
-//         listing.has_parking,
-
-//         listing.min_age,
-//         listing.max_age,
-//         listing.gender_preference,
-//         listing.couples_allowed,
-//         listing.smokers_allowed,
-//         listing.pets_allowed,
-
-//         listing.title,
-//         listing.description,
-
-//         listing.is_expired,
-//         listing.expiry_date,
-//         listing_create_date,
-//         listing_update_date,
-
-//         id,
-//       ]
-//     );
-//     rows = result[0];
-//     return result;
-//   } catch (err) {
-//     throw err;
-//   }
-// };
 
 Listing.deleteAListingById = async (id) => {
   try {
