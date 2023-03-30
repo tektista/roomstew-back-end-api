@@ -58,6 +58,7 @@ const getAllListings = async (req, res, next) => {
         minRoomRent: minRoomRent,
         earliestRoomDateAvailable: minRoomStartDate,
         hasLivingRoom: listing.has_living_room,
+        hasHMO: listing.has_hmo,
         bathroomCount: listing.bathroom_count,
       };
       cardList.push(listingCard);
@@ -420,6 +421,7 @@ const getAllListingsByListingIds = async (req, res, next) => {
         minRoomRent: minRoomRent,
         earliestRoomDateAvailable: minRoomStartDate,
         hasLivingRoom: listing.has_living_room,
+        hasHMO: listing.has_hmo,
         bathroomCount: listing.bathroom_count,
       };
 
@@ -488,6 +490,7 @@ const getAllListingsByUserId = async (req, res, next) => {
         minRoomRent: minRoomRent,
         earliestRoomDateAvailable: minRoomStartDate,
         hasLivingRoom: listing.has_living_room,
+        hasHMO: listing.has_hmo,
         bathroomCount: listing.bathroom_count,
       };
 
