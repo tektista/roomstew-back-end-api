@@ -15,6 +15,7 @@ SaveListing.getSavedListingIdsByUserId = async () => {
     );
 
     const savedQueryRows = savedQueryResult[0];
+    console.log("saved model", savedQueryRows);
     return savedQueryRows;
   } catch (err) {
     throw err;

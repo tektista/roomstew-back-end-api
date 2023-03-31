@@ -372,15 +372,20 @@ const getAllListingsByListingIds = async (req, res, next) => {
   try {
     //Get the listings ids saved by the user
     const saveQueryRows = await SaveListing.getSavedListingIdsByUserId();
+    console.log("saved controller", saveQueryRows);
 
     const listingIdsSavedByUser = saveQueryRows.map((row) => {
       return row.listing_listing_id;
     });
 
+    console.log("listingIdsSavedByUser", listingIdsSavedByUser);
+
     const listingRows = await Listing.getAllListingsByListingIds(
       listingIdsSavedByUser,
       req
     );
+
+    console.log("listing rows", listingRows);
 
     const cardList = [];
     for (const listing of listingRows) {

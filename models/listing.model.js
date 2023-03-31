@@ -196,7 +196,7 @@ Listing.getAllListings = async function getAllListings(req) {
 };
 
 Listing.getAllListingsByListingIds = async (listingIds, req) => {
-  const limit = 1;
+  const limit = 100;
   const offset = req.query.offset;
   try {
     const listingRowList = [];
