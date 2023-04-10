@@ -41,7 +41,7 @@ Listing.getAllListings = async function getAllListings(req) {
   const filterObj = req.query;
   const offset = req.query.offset;
   const USER_ID = 1;
-  const limit = 1;
+  const limit = 10;
 
   //These will be set and added to query if they are truthy,
   let joinCondition = "";
@@ -183,9 +183,6 @@ Listing.getAllListings = async function getAllListings(req) {
   ORDER BY listing.listing_create_date DESC
   LIMIT ${limit} OFFSET ${offset}
 `;
-
-  console.log("Query start");
-  console.log(listingQuery);
 
   try {
     const listingQueryResult = await pool.query(listingQuery);
