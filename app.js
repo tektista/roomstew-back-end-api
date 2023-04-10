@@ -1,28 +1,6 @@
-// const express = require("express");
-// const cors = require("cors");
-// const listingsRouter = require("./routes/listing.routes");
-// const errorHandler = require("./utils/errorHandler");
-
-// const app = express();
-// //
-// app.use(express.bodyParser({ limit: "50mb" }));
-
-// app.use(cors());
-
-// //middleware built into express to recognize the incoming Request Object as a JSON Object
-// app.use(express.json());
-
-// //use listings routes with path /api/listings
-// app.use("/api/listings", listingsRouter);
-
-// //error handler middleware
-// app.use(errorHandler);
-
-// module.exports = app;
-
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser"); // require body-parser middleware
+const bodyParser = require("body-parser");
 const listingsRouter = require("./routes/listing.routes");
 const roomsRouter = require("./routes/room.routes");
 const saveRouter = require("./routes/save.routes");
