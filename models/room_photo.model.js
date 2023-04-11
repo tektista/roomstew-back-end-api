@@ -1,3 +1,7 @@
+/*
+Description: the model for the room_photo table in the db, containing functions that query the room_photo table
+*/
+
 const pool = require("./db.js");
 
 const RoomPhoto = function (roomPhoto) {
@@ -7,11 +11,9 @@ const RoomPhoto = function (roomPhoto) {
   this.room_room_id = roomPhoto.room_room_id;
 };
 
-/* all functions in this require a room_id which is provided by 
-the room model
+/*
+return photos for a room by id from the db
 */
-
-//get all photos for a room
 RoomPhoto.getPhotosForARoom = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
@@ -25,6 +27,9 @@ RoomPhoto.getPhotosForARoom = async (id) => {
   }
 };
 
+/*
+return the photo ids for a room by id from the db
+*/
 RoomPhoto.getPhotoIdsForARoom = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
@@ -38,6 +43,9 @@ RoomPhoto.getPhotoIdsForARoom = async (id) => {
   }
 };
 
+/*
+return all photos for a room by id from the db, ordered by room_photo_order
+*/
 RoomPhoto.getOrderedPhotosForARoom = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
@@ -51,7 +59,9 @@ RoomPhoto.getOrderedPhotosForARoom = async (id) => {
   }
 };
 
-//create one room photo
+/*
+insert a room photo into the db
+*/
 RoomPhoto.createAPhotoForARoom = async (newRoomPhoto) => {
   try {
     const roomPhotoQueryResult = await pool.query(
@@ -65,18 +75,12 @@ RoomPhoto.createAPhotoForARoom = async (newRoomPhoto) => {
   }
 };
 
-/* 
-    For each room image, create a new room photo obj
-     with a room_room id pointing to the current room
-     Then add this to the database
-     */
-//Insert all photos for a given room ID and image list
+//insert all photos for a given room ID into the db
 RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
   try {
     const IdsOfRoomPhotosInserted = [];
 
     for (let i = 0; i < roomImageList.length; i++) {
-      //TO DO: validate the room photos
       const newRoomPhoto = new RoomPhoto({
         room_photo: roomImageList[i].room_photo,
         room_photo_order: roomImageList[i].room_photo_order,
@@ -93,6 +97,9 @@ RoomPhoto.createPhotosForARoom = async (roomInsertId, roomImageList) => {
   }
 };
 
+/*
+delete a room photo by id from the db
+*/
 RoomPhoto.deleteAPhotoByRoomId = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(
@@ -105,6 +112,9 @@ RoomPhoto.deleteAPhotoByRoomId = async (id) => {
   }
 };
 
+/*
+delete all room photos by room id from the db
+*/
 RoomPhoto.deleteRoomPhotosByRoomId = async (id) => {
   try {
     const roomPhotoQueryResult = await pool.query(

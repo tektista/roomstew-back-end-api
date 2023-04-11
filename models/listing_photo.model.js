@@ -1,3 +1,7 @@
+/*
+Description: the model for the listing_photo table in the db, containing functions that query the listing_photo table
+*/
+
 const pool = require("./db.js");
 
 const ListingPhoto = function (listingPhoto) {
@@ -7,10 +11,9 @@ const ListingPhoto = function (listingPhoto) {
   this.listing_listing_id = listingPhoto.listing_listing_id;
 };
 
-/* all functions in this require a listing_id which is provided by 
-the listing model
+/*
+return the first photo for a listing by id from the db
 */
-
 ListingPhoto.getThumbnailForAListing = async (id) => {
   try {
     const listingPhotoQueryResult = await pool.query(
@@ -25,7 +28,9 @@ ListingPhoto.getThumbnailForAListing = async (id) => {
   }
 };
 
-//get all photos for a listing
+/*
+return all photos for a listing by id from the db
+*/
 ListingPhoto.getPhotosForAListing = async (id) => {
   try {
     const listingPhotoQueryResult = await pool.query(
@@ -39,6 +44,9 @@ ListingPhoto.getPhotosForAListing = async (id) => {
   }
 };
 
+/*
+return all photos for a listing by id from the db, ordered by listing_photo_order
+*/
 ListingPhoto.getOrderedPhotosForAListing = async (id) => {
   try {
     const listingPhotoQueryResult = await pool.query(
@@ -59,7 +67,9 @@ ListingPhoto.getOrderedPhotosForAListing = async (id) => {
   }
 };
 
-//create one listing photo
+/*
+insert a photo for a listing into the db
+*/
 ListingPhoto.createAPhotoForAListing = async (newListingPhoto) => {
   try {
     const listingPhotoQueryResult = await pool.query(
@@ -74,12 +84,8 @@ ListingPhoto.createAPhotoForAListing = async (newListingPhoto) => {
 };
 
 /* 
-    For each listing image, create a new listing photo obj
-     with a listing_listing id pointing to the current listing
-     Then add this to the database
-     */
-
-//Insert all photos for a given listing ID and image list
+ insert photos for a listing into the db
+*/
 ListingPhoto.createPhotosForAListing = async (
   listingInsertId,
   listingPhotos
@@ -88,7 +94,6 @@ ListingPhoto.createPhotosForAListing = async (
     const IdsOfListingPhotosInserted = [];
 
     for (let i = 0; i < listingPhotos.length; i++) {
-      //TO DO: validate the listing photos
       const newListingPhoto = new ListingPhoto({
         listing_photo: listingPhotos[i].listing_photo,
         listing_photo_order: listingPhotos[i].listing_photo_order,
@@ -108,6 +113,9 @@ ListingPhoto.createPhotosForAListing = async (
   }
 };
 
+/*
+delete all photos for a listing by listing id from the db
+*/
 ListingPhoto.deleteListingPhotosByListingId = async (listingId) => {
   try {
     const listingPhotoQueryResult = await pool.query(

@@ -1,4 +1,7 @@
-const { x } = require("joi");
+/* 
+Description: the model for the room table in the db, containing functions that query the room table
+*/
+
 const pool = require("./db.js");
 const RoomPhoto = require("./room_photo.model.js");
 
@@ -21,10 +24,9 @@ const Room = function (room) {
   this.listing_listing_id = room.listing_listing_id;
 };
 
-/* all functions in this require a listing_id which is provided by 
-the listing model
+/* 
+return a room by id from the db
 */
-
 Room.getARoomById = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -39,7 +41,9 @@ Room.getARoomById = async (id) => {
   }
 };
 
-//validate inside here
+/*
+return rooms for a listing by listing id from the db
+*/
 Room.getRoomsForAListing = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -54,6 +58,9 @@ Room.getRoomsForAListing = async (id) => {
   }
 };
 
+/*
+return all room ids for a listing by listing id from the db
+*/
 Room.getRoomIdsForAListing = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -68,6 +75,9 @@ Room.getRoomIdsForAListing = async (id) => {
   }
 };
 
+/*
+return room details for a listing by listing id from the db
+*/
 Room.getRoomsCardDetailsForAListing = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -82,6 +92,9 @@ Room.getRoomsCardDetailsForAListing = async (id) => {
   }
 };
 
+/*
+insert rooms for a listing by listing id into the db
+*/
 // listingRoomsWithRoomPhotos =
 //[ {roomObj: {roomObj}, roomObjPhotoList: [{roomPhotoObj}...] }...]
 Room.createRoomsForAListing = async (
@@ -93,8 +106,6 @@ Room.createRoomsForAListing = async (
     const IdsOfRoomPhotosInserted = [];
 
     for (let i = 0; i < listingRoomsWithRoomPhotos.length; i++) {
-      //TO DO: validate  photos
-
       const newRoom = new Room({
         room_description:
           listingRoomsWithRoomPhotos[i].roomObj.room_description,
@@ -140,6 +151,9 @@ Room.createRoomsForAListing = async (
   }
 };
 
+/*
+insert a room into the db
+*/
 Room.createARoom = async (newRoom) => {
   try {
     const roomQueryResult = await pool.query("INSERT INTO room SET ?", [
@@ -152,6 +166,9 @@ Room.createARoom = async (newRoom) => {
   }
 };
 
+/*
+insert rooms for a listing by listing id into the db
+*/
 Room.createRoomsForAListing = async (
   listingInsertId,
   listingRoomsWithRoomPhotos
@@ -161,8 +178,6 @@ Room.createRoomsForAListing = async (
     const IdsOfRoomPhotosInserted = [];
 
     for (let i = 0; i < listingRoomsWithRoomPhotos.length; i++) {
-      //TO DO: validate  photos
-
       const newRoom = new Room({
         room_description: listingRoomsWithRoomPhotos[i][0].room_description,
         rent: listingRoomsWithRoomPhotos[i][0].rent,
@@ -205,7 +220,7 @@ Room.createRoomsForAListing = async (
   }
 };
 
-//For use on the listings cards on
+//return the number of rooms for a listing by listing id from the db
 Room.getRoomCountForAListing = async (id) => {
   try {
     const roomCountQueryResult = await pool.query(
@@ -219,6 +234,9 @@ Room.getRoomCountForAListing = async (id) => {
   }
 };
 
+/*
+return the min room rent for a listing by listing id from the db
+*/
 Room.getMinRoomRentForAListing = async (id) => {
   try {
     const minRoomRentForAListingQueryResult = await pool.query(
@@ -231,6 +249,9 @@ Room.getMinRoomRentForAListing = async (id) => {
   }
 };
 
+/*
+return the min room start date for a listing by listing id from the db
+*/
 Room.getMinRoomStartDateForAListing = async (id) => {
   try {
     const minStartDateQueryResult = await pool.query(
@@ -243,8 +264,9 @@ Room.getMinRoomStartDateForAListing = async (id) => {
   }
 };
 
-//For use on the Listings Details page, for the cards of rooms
+/*
 
+*/
 Room.getRoomsCardInfoForAListing = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -266,6 +288,9 @@ Room.getRoomsCardInfoForAListing = async (id) => {
   }
 };
 
+/*
+delete a room by room id from the db
+*/
 Room.deleteARoomById = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -279,6 +304,9 @@ Room.deleteARoomById = async (id) => {
   }
 };
 
+/*
+delete all rooms for a listing by listing id from the db
+*/
 Room.deleteRoomsByListingId = async (id) => {
   try {
     const roomQueryResult = await pool.query(
@@ -292,6 +320,9 @@ Room.deleteRoomsByListingId = async (id) => {
   }
 };
 
+/*
+update a room by room id in the db
+*/
 Room.updateARoomById = async (id, room) => {
   try {
     const roomQueryResult = await pool.query(

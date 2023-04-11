@@ -1,13 +1,16 @@
-//Description: Instead of defining functionalities inside routes, we define them in a separate controller file,
-//so routes are easily readable
+/* Description: Instead of defining functionalities inside routes, we define them in a separate controller file, so routes are easily readable */
 const listing = require("../controllers/listing.controller.js");
 
-//express router used to shorten route path to base
+//create an express router
 const saveRouter = require("express").Router();
 
-// //route to get a specific listing
+//route to get a user's saved listings, using a hardcoded user id
 saveRouter.get("/", listing.getSavedListingIdsByUserId);
+
+//route to save a listing for a user
 saveRouter.post("/:id", listing.saveAListingForAUser);
+
+//route to delete a saved listing for a user
 saveRouter.delete("/:id", listing.deleteAListingForAUser);
 
 module.exports = saveRouter;

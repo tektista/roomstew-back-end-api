@@ -1,4 +1,6 @@
-const { x } = require("joi");
+/*
+Description: the model for the saved table in the db, containing functions that query the saved table
+*/
 const pool = require("./db.js");
 
 const SaveListing = function (saved) {
@@ -6,8 +8,11 @@ const SaveListing = function (saved) {
   this.listing_listing_id = saved.listing_listing_id;
 };
 
+/*
+return the saved listing ids for a user by user id from the db
+*/
 SaveListing.getSavedListingIdsByUserId = async () => {
-  //Hardcode a user
+  //hardcoded user id
   const USER_ID = 1;
   try {
     const savedQueryResult = await pool.query(
@@ -22,8 +27,11 @@ SaveListing.getSavedListingIdsByUserId = async () => {
   }
 };
 
+/*
+save a listing for a user by listing id and user id to the db
+*/
 SaveListing.saveAListingByListingAndUserId = async (req) => {
-  // Hardcode a user
+  //hardcoded user id
   const USER_ID = 1;
   const listingId = req.params.id;
 
@@ -44,6 +52,9 @@ SaveListing.saveAListingByListingAndUserId = async (req) => {
   }
 };
 
+/*
+delete a saved listing for a user by listing id and user id from the db
+*/
 SaveListing.deleteASavedListingByListingAndUserId = async (req) => {
   const USER_ID = 1;
   const listingId = req.params.id;

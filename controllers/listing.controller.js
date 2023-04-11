@@ -1,9 +1,7 @@
-/*
-Description:
-
-This is the controller for the API. 
-The functions in this file are called by the routes in the routes folder.
-The purpose of this files is to use the models to query the database, and process the data before sending it back to the client.
+/* Description: 
+this is the controller for the api
+the functions in this file are called by the routes in the route folder
+the functions in the file call model functions from their respective models and then return a response to the database
 */
 
 const pool = require("../models/db");
@@ -19,7 +17,7 @@ const { listingSchema } = require("../schemas/listing.schema");
 /* LISTINGS */
 
 /* 
-Front End Usage: gathers the information for the listing cards on listings results page, after a user has searched for listings.
+returns a list of card objects by calling required model functions
 */
 const getAllListings = async (req, res, next) => {
   try {
@@ -70,7 +68,9 @@ const getAllListings = async (req, res, next) => {
   }
 };
 
-/* Real-world usage: This gathers the information required to get a listings details */
+/*
+returns one card object by id by calling required model functions
+*/
 const getAListingById = async (req, res, next) => {
   try {
     //{listingObj: [{listingObj}], listingPhotoObjList: [{listingPhoto}...], listingRoomIdList: [1,2,3] }
@@ -93,6 +93,9 @@ const getAListingById = async (req, res, next) => {
   }
 };
 
+/*
+creates a listing by calling required model functions
+*/
 const createAListing = async (req, res, next) => {
   try {
     // [{listingObj: {listingObj}, listingPhotoObjList: [{listingPhotoObj}...], listingRoomObjList: [{roomObj}...]
@@ -101,14 +104,12 @@ const createAListing = async (req, res, next) => {
     const listingRoomsAndRoomPhotosObjList =
       req.body.listingRoomsAndRoomPhotosObjList;
 
-    //TO DO: validate Listing Photos, Rooms and Room Photos
     const { error, value } = listingSchema.validate(listing);
 
     const newListing = new Listing({
       postcode: listing.postcode,
       street_address: listing.street_address,
       city: listing.city,
-      // country: listing.country,
       building_type: listing.building_type,
       bills_included: listing.bills_included,
       internet_included: listing.internet_included,
@@ -144,16 +145,16 @@ const createAListing = async (req, res, next) => {
 
     //[ {roomObj: {roomObj}, IdsOfRoomsInserted: [1,2,3..]}... ]
     const roomDataObjInsertedList = [];
-    //For each  obj in the list:  [ {roomObj: {roomObj}, roomObjPhotoList: [{roomPhotoObj}...] }...]
+    //dor each  obj in the list:  [ {roomObj: {roomObj}, roomObjPhotoList: [{roomPhotoObj}...] }...]
     for (const roomDataObj of listingRoomsAndRoomPhotosObjList) {
-      //Set the listing id of the room to the insert id of the listing
+      //set the listing id of the room to the insert id of the listing
       roomDataObj.roomObj.listing_listing_id = listingInsertId;
 
       const roomInsertData = await Room.createARoom(roomDataObj.roomObj);
       const roomInsertId = roomInsertData.roomRows.insertId;
       const roomPhotoObjList = roomDataObj.roomPhotoObjList;
 
-      //Insert the photos for the room, using the insert Id of the room
+      //insert the photos for the room, using the insert Id of the room
       const IdsOfRoomPhotosInserted = await RoomPhoto.createPhotosForARoom(
         roomInsertId,
         roomPhotoObjList
@@ -180,6 +181,9 @@ const createAListing = async (req, res, next) => {
   }
 };
 
+/*
+update a listing by id by calling required model functions
+*/
 const updateAListingById = async (req, res, next) => {
   const listingId = req.params.id;
   const updateObj = req.body;
@@ -210,6 +214,9 @@ const updateAListingById = async (req, res, next) => {
   }
 };
 
+/*
+delete a listing by id by calling required model functions
+*/
 const deleteAListingById = async (req, res, next) => {
   try {
     const listingId = req.params.id;
@@ -219,21 +226,21 @@ const deleteAListingById = async (req, res, next) => {
     let roomPhotosAffected = 0;
 
     for (const roomRowObj of roomRowsIds) {
-      //Delete all the room photos for a room
+      //delete all the room photos for a room
       const roomPhotoRows = await RoomPhoto.deleteRoomPhotosByRoomId(
         roomRowObj.room_id
       );
 
       roomPhotosAffected += roomPhotoRows.affectedRows;
     }
-
+    //delete all the rooms for a listing
     const roomRows = await Room.deleteRoomsByListingId(listingId);
 
-    //Delete all the listing photos for a listing
+    //delete all the listing photos for a listing
     const listingPhotoRows = await ListingPhoto.deleteListingPhotosByListingId(
       listingId
     );
-
+    //delete the listing
     const listingQueryRows = await Listing.deleteAListingById(req.params.id);
     res
       .status(200)
@@ -247,7 +254,7 @@ const deleteAListingById = async (req, res, next) => {
 
 /*  ROOMS */
 
-/* This is used for navigating to the rooms details screen*/
+/* returns a room object  by calling required model functions */
 const getARoomsDetailsById = async (req, res, next) => {
   try {
     const roomId = req.params.id;
@@ -271,6 +278,9 @@ const getARoomsDetailsById = async (req, res, next) => {
   }
 };
 
+/*
+creates a room for a listing by calling required model functions
+*/
 const createARoomByListingId = async (req, res, next) => {
   const listingId = req.params.id;
   const roomDataObj = req.body;
@@ -296,14 +306,13 @@ const createARoomByListingId = async (req, res, next) => {
   }
 };
 
-// This is used for updating a rooms details, when a user chooses to update a room from their listing
+/* update a rooms details by room id by using required model functions */
 const updateARoomById = async (req, res, next) => {
   const roomObjWithRoomImageList = req.body;
   const roomObj = roomObjWithRoomImageList.roomObj;
   const roomPhotoObjList = roomObjWithRoomImageList.roomImageList;
 
   try {
-    //TO DO: validate this
     const newRoom = {
       room_description: roomObj.room_description,
       rent: roomObj.rent,
@@ -337,7 +346,9 @@ const updateARoomById = async (req, res, next) => {
   }
 };
 
-// This is used for deleting a room from a listing when a user is on their personal listings screen
+/*
+delete a room by id by calling required model functions
+*/
 const deleteARoomById = async (req, res, next) => {
   const roomId = req.params.id;
 
@@ -366,26 +377,22 @@ const deleteARoomById = async (req, res, next) => {
 SAVED LISTINGS
 */
 
-//Get all the listings saved by the user, via the saved table from the db
-//For use in the frontend saved listings screen
+/*
+return a list of listings, using a hardcoded user id from the saved table, by calling rqeuired model functions
+*/
 const getAllListingsByListingIds = async (req, res, next) => {
   try {
-    //Get the listings ids saved by the user
+    //get the listings ids saved by the user
     const saveQueryRows = await SaveListing.getSavedListingIdsByUserId();
-    console.log("saved controller", saveQueryRows);
 
     const listingIdsSavedByUser = saveQueryRows.map((row) => {
       return row.listing_listing_id;
     });
 
-    console.log("listingIdsSavedByUser", listingIdsSavedByUser);
-
     const listingRows = await Listing.getAllListingsByListingIds(
       listingIdsSavedByUser,
       req
     );
-
-    console.log("listing rows", listingRows);
 
     const cardList = [];
     for (const listing of listingRows) {
@@ -439,7 +446,7 @@ const getAllListingsByListingIds = async (req, res, next) => {
   }
 };
 
-//Get all the listings ids of the listings saved by the user via the saved table
+//returns all the listings ids of the listings saved by the user via the saved table
 const getSavedListingIdsByUserId = async (req, res, next) => {
   try {
     const saveQueryResult = await SaveListing.getSavedListingIdsByUserId(req);
@@ -451,7 +458,9 @@ const getSavedListingIdsByUserId = async (req, res, next) => {
 };
 
 /* USER */
-//Get all the listings by a user, for use in the front end user listings screen
+/*
+returns all listings by user id by calling required model functions
+*/
 const getAllListingsByUserId = async (req, res, next) => {
   try {
     const cardList = [];
@@ -508,6 +517,9 @@ const getAllListingsByUserId = async (req, res, next) => {
   }
 };
 
+/*
+saves a listing for a user using a listing id and a user id by and creating a new row in the saved table
+*/
 const saveAListingForAUser = async (req, res, next) => {
   try {
     const saveQueryResult = await SaveListing.saveAListingByListingAndUserId(
@@ -519,6 +531,9 @@ const saveAListingForAUser = async (req, res, next) => {
   }
 };
 
+/*
+delete a saved listing for a user by deleting a row in the saved table
+*/
 const deleteAListingForAUser = async (req, res, next) => {
   try {
     const saveQueryResult =
